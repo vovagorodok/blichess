@@ -23,21 +23,21 @@ export function lastMoveToUci(st: State): string {
         st.lastPromotion ? st.lastPromotion : undefined)
 }
 
-export function sendMsgToDevice(msg: string) {
-    bluetooth.sendMsgToDevice(msg)
+export function sendCommandToPeripheral(cmd: string) {
+    bluetooth.sendCommandToPeripheral(cmd)
 }
 
-export function sendMoveToBoard(uci: string) {
+export function sendMoveToCentral(uci: string) {
     const move = chessFormat.uciToMove(uci)
     const prom = chessFormat.uciToProm(uci)
-    external.sendMoveToBoard(move[0], move[1], prom)
+    external.sendMoveToCentral(move[0], move[1], prom)
 }
 
-export function getCommandParams(msg: string): string {
-    return msg.substring(msg.indexOf(' ') + 1)
+export function getCommandParams(cmd: string): string {
+    return cmd.substring(cmd.indexOf(' ') + 1)
 }
 
-export function hasPromotion(uci: string) {
+export function isUciWithPromotion(uci: string) {
     return chessFormat.uciToProm(uci) !== undefined
 }
 

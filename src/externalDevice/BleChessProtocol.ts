@@ -1,6 +1,5 @@
 import { BaseProtocol, BaseState } from './BaseProtocol'
-// import * as chessFormat from '../utils/chessFormat'
-import { hasPromotion, genFullFen, lastMoveToUci, getCommandParams, sendMsgToDevice, sendMoveToBoard, areFensEqual } from './utils'
+import { isUciWithPromotion, genFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, areFensEqual } from './utils'
 import { State, makeDefaults } from '../chessground/state'
 import { Toast } from '@capacitor/toast'
 import i18n from '../i18n'
@@ -30,23 +29,23 @@ abstract class BleChessState extends BaseState {
     return this.context.features
   }
 
-  onReceiveMsgFromDevice(msg: string) {
+  onPeripheralCommand(cmd: string) {
     this.transitionTo(new Init)
-    Toast.show({ text: `unexpected: ${msg}` })
+    Toast.show({ text: `unexpected: ${cmd}` })
   }
 
-  onBoardConfigured(st: State) {
+  onCentralStateCreated(st: State) {
     this.setState(st)
   }
 }
 
 class ExpectMsg extends BleChessState {
-  onReceiveMsgFromDevice(msg: string) {
-    if (msg.startsWith('msg')) {
-      sendMsgToDevice('ok')
-      Toast.show({ text: getCommandParams(msg) })
+  onPeripheralCommand(cmd: string) {
+    if (cmd.startsWith('msg')) {
+      sendCommandToPeripheral('ok')
+      Toast.show({ text: getCommandParams(cmd) })
     }
-    else super.onReceiveMsgFromDevice(msg)
+    else super.onPeripheralCommand(cmd)
   }
 }
 
@@ -58,38 +57,38 @@ class Init extends BleChessState {
 
 class CheckFeatureMsg extends BleChessState {
   onEnter() {
-    sendMsgToDevice('feature msg')
+    sendCommandToPeripheral('feature msg')
   }
-  onReceiveMsgFromDevice(msg: string) {
-    if (msg === 'ok') {
+  onPeripheralCommand(cmd: string) {
+    if (cmd === 'ok') {
       this.getFeatures().msg = true
       this.transitionTo(new CheckFeatureLastMove)
     }
-    else if (msg === 'nok') {
+    else if (cmd === 'nok') {
       this.transitionTo(new CheckFeatureLastMove)
     }
-    else super.onReceiveMsgFromDevice(msg)
+    else super.onPeripheralCommand(cmd)
   }
 }
 
 class CheckFeatureLastMove extends BleChessState {
   onEnter() {
-    sendMsgToDevice('feature last_move')
+    sendCommandToPeripheral('feature last_move')
   }
-  onReceiveMsgFromDevice(msg: string) {
-    if (msg === 'ok') {
+  onPeripheralCommand(cmd: string) {
+    if (cmd === 'ok') {
       this.getFeatures().lastMove = true
       this.transitionTo(new Idle)
     }
-    else if (msg === 'nok') {
+    else if (cmd === 'nok') {
       this.transitionTo(new Idle)
     }
-    else super.onReceiveMsgFromDevice(msg)
+    else super.onPeripheralCommand(cmd)
   }
 }
 
 class Idle extends ExpectMsg {
-  onBoardConfigured(st: State) {
+  onCentralStateCreated(st: State) {
     this.setState(st)
     this.transitionTo(new SynchronizeVariant)
   }
@@ -97,47 +96,47 @@ class Idle extends ExpectMsg {
 
 class SynchronizeVariant extends BleChessState {
   onEnter() {
-    // sendMsgToDevice(`variant ${this.getState().variant}`)
-    sendMsgToDevice("variant standard") // TODO implement variant
+    // sendCommandToPeripheral(`variant ${this.getState().variant}`)
+    sendCommandToPeripheral("variant standard") // TODO implement variant
   }
-  onReceiveMsgFromDevice(msg: string) {
-    if (msg === 'ok') {
+  onPeripheralCommand(cmd: string) {
+    if (cmd === 'ok') {
       this.transitionTo(new SynchronizeFen)
     }
-    else if (msg === 'nok') {
+    else if (cmd === 'nok') {
       this.transitionTo(new Idle)
     }
-    else super.onReceiveMsgFromDevice(msg)
+    else super.onPeripheralCommand(cmd)
   }
 }
 
 class SynchronizeFen extends BleChessState {
   onEnter() {
-    sendMsgToDevice(`fen ${genFullFen(this.getState())}`)
+    sendCommandToPeripheral(`fen ${genFullFen(this.getState())}`)
   }
-  onReceiveMsgFromDevice(msg: string) {
-    if (msg === 'ok') {
+  onPeripheralCommand(cmd: string) {
+    if (cmd === 'ok') {
       this.transitionTo(new SynchronizeLastMove)
     }
-    else if (msg === 'nok') {
+    else if (cmd === 'nok') {
       this.transitionTo(new Unsynchronizd)
     }
-    else super.onReceiveMsgFromDevice(msg)
+    else super.onPeripheralCommand(cmd)
   }
 }
 
 class SynchronizeLastMove extends BleChessState {
   onEnter() {
     if (this.getFeatures().lastMove && this.getState().lastMove) {
-      sendMsgToDevice(`last_move ${lastMoveToUci(this.getState())}`)
+      sendCommandToPeripheral(`last_move ${lastMoveToUci(this.getState())}`)
     }
     else this.transitionTo(new Synchronizd)
   }
-  onReceiveMsgFromDevice(msg: string) {
-    if (msg === 'ok') {
+  onPeripheralCommand(cmd: string) {
+    if (cmd === 'ok') {
       this.transitionTo(new Synchronizd)
     }
-    else super.onReceiveMsgFromDevice(msg)
+    else super.onPeripheralCommand(cmd)
   }
 }
 
@@ -145,67 +144,69 @@ class Unsynchronizd extends ExpectMsg {
   onEnter() {
     Toast.show({ text: `${i18n('unsynchronizd')}` })
   }
-  onBoardConfigured(st: State) {
+  onCentralStateCreated(st: State) {
     this.setState(st)
     this.transitionTo(new SynchronizeVariant)
   }
-  onBoardStateChanged(_st: State) {
+  onCentralStateChanged() {
     this.transitionTo(new SynchronizeFen)
   }
-  onReceiveMsgFromDevice(msg: string) {
-    if (msg.startsWith('fen')) {
-      const peripheralFen = getCommandParams(msg)
+  onPeripheralCommand(cmd: string) {
+    if (cmd.startsWith('fen')) {
+      const peripheralFen = getCommandParams(cmd)
       const centralFen = genFullFen(this.getState())
       if (areFensEqual(peripheralFen, centralFen)) {
-        sendMsgToDevice('ok')
+        sendCommandToPeripheral('ok')
         this.transitionTo(new SynchronizeLastMove)
         Toast.show({ text: `${i18n('synchronizd')}` })
       }
-      else sendMsgToDevice('nok')
+      else sendCommandToPeripheral('nok')
     }
-    else super.onReceiveMsgFromDevice(msg)
+    else super.onPeripheralCommand(cmd)
   }
 }
 
 class Synchronizd extends ExpectMsg {
-  onBoardConfigured(st: State) {
+  onCentralStateCreated(st: State) {
     this.setState(st)
     this.transitionTo(new SynchronizeVariant)
   }
-  onBoardStateChanged(_st: State) {
-    sendMsgToDevice(`move ${lastMoveToUci(this.getState())}`)
+  onCentralStateChanged() {
+    sendCommandToPeripheral(`move ${lastMoveToUci(this.getState())}`)
     this.transitionTo(new SynchronizeCentralMove)
   }
-  onReceiveMsgFromDevice(msg: string) {
-    if (msg.startsWith('move')) {
-      const move = getCommandParams(msg)
-      this.transitionTo(hasPromotion(move) ? new SynchronizePeripheralPromotedMove : new SynchronizePeripheralMove) // TODO
-      sendMoveToBoard(move)
+  onPeripheralCommand(cmd: string) {
+    if (cmd.startsWith('move')) {
+      const move = getCommandParams(cmd)
+      this.transitionTo(isUciWithPromotion(move) ?
+        new SynchronizePeripheralPromotedMove :
+        new SynchronizePeripheralMove)
+      sendMoveToCentral(move)
     }
-    else if (msg.startsWith('fen')) {
-      sendMsgToDevice('nok')
+    else if (cmd.startsWith('fen')) {
+      sendCommandToPeripheral('nok')
       this.transitionTo(new Unsynchronizd)
     }
-    else super.onReceiveMsgFromDevice(msg)
+    else super.onPeripheralCommand(cmd)
   }
 }
 
 class SynchronizeCentralMove extends BleChessState {
-  onReceiveMsgFromDevice(msg: string) {
-    if (msg === 'ok') {
+  onPeripheralCommand(cmd: string) {
+    if (cmd === 'ok') {
       this.transitionTo(new Synchronizd)
     }
-    else super.onReceiveMsgFromDevice(msg)
+    else super.onPeripheralCommand(cmd)
   }
 }
 
 class SynchronizePeripheralMove extends BleChessState {
-  onBoardStateChanged(st: State) {
-    sendMsgToDevice('ok')
-    this.transitionTo(st.lastPromotion ? new Promote : new Synchronizd) // TODO 3 hanshake?
+  onCentralStateChanged() {
+    sendCommandToPeripheral('ok')
+    this.transitionTo(this.getState().lastPromotion ? new Promote : new Synchronizd) // TODO 3 hanshake?
   }
-  onMoveRejectedFromBoard() {
-    sendMsgToDevice('nok')
+  onMoveRejectedByCentral() {
+    sendCommandToPeripheral('nok')
     this.transitionTo(new Synchronizd)
     Toast.show({ text: `${i18n('rejected')}` })
   }
@@ -213,23 +214,23 @@ class SynchronizePeripheralMove extends BleChessState {
 
 class Promote extends BleChessState {
   onEnter() {
-    sendMsgToDevice(`promote ${lastMoveToUci(this.getState())}`)
+    sendCommandToPeripheral(`promote ${lastMoveToUci(this.getState())}`)
   }
-  onReceiveMsgFromDevice(msg: string) {
-    if (msg === 'ok') {
+  onPeripheralCommand(cmd: string) {
+    if (cmd === 'ok') {
       this.transitionTo(new Synchronizd)
     }
-    else super.onReceiveMsgFromDevice(msg)
+    else super.onPeripheralCommand(cmd)
   }
 }
 
 class SynchronizePeripheralPromotedMove extends BleChessState {
-  onBoardStateChanged(_st: State) {
-    sendMsgToDevice('ok')
+  onCentralStateChanged() {
+    sendCommandToPeripheral('ok')
     this.transitionTo(new Synchronizd)
   }
-  onMoveRejectedFromBoard() {
-    sendMsgToDevice('nok')
+  onMoveRejectedByCentral() {
+    sendCommandToPeripheral('nok')
     this.transitionTo(new Synchronizd)
     Toast.show({ text: `${i18n('rejected')}` })
   }
