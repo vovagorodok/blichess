@@ -1,6 +1,6 @@
 import { BaseProtocol, BaseState } from './BaseProtocol'
-import * as chessFormat from '../utils/chessFormat'
-import { isUserTurn, genFullFen, lastMoveToUci, getCommandParams, sendMsgToDevice, sendMoveToBoard, areFensEqual } from './utils'
+// import * as chessFormat from '../utils/chessFormat'
+import { hasPromotion, genFullFen, lastMoveToUci, getCommandParams, sendMsgToDevice, sendMoveToBoard, areFensEqual } from './utils'
 import { State, makeDefaults } from '../chessground/state'
 import { Toast } from '@capacitor/toast'
 import i18n from '../i18n'
@@ -179,7 +179,7 @@ class Synchronizd extends ExpectMsg {
   onReceiveMsgFromDevice(msg: string) {
     if (msg.startsWith('move')) {
       const move = getCommandParams(msg)
-      this.transitionTo(move.length == 5 ? new SynchronizePeripheralPromotedMove : new SynchronizePeripheralMove) // TODO
+      this.transitionTo(hasPromotion(move) ? new SynchronizePeripheralPromotedMove : new SynchronizePeripheralMove) // TODO
       sendMoveToBoard(move)
     }
     else if (msg.startsWith('fen')) {

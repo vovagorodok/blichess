@@ -6,7 +6,8 @@ import { Toast } from '@capacitor/toast'
 import { delay } from './utils'
 import { TestProtocol } from './TestProtocol'
 import { UciProtocol } from './UciProtocol'
-import { CecpProtocol } from './CecpProtocol'
+// import { CecpProtocol } from './CecpProtocol'
+import { BleChessProtocol } from './BleChessProtocol'
 import { dummyProtocol } from './DummyProtocol'
 
 interface ChessServiceUUIDs {
@@ -23,7 +24,7 @@ const SUPPOTRED_SERVICES: ChessService[] = [
   { uuids: { srv:  'f5351050-b2c9-11ec-a0c0-b3bc53b08d33',
              txCh: 'f53513ca-b2c9-11ec-a0c1-639b8957db99',
              rxCh: 'f535147e-b2c9-11ec-a0c2-8bbd706ec4e6' },
-    protocol: CecpProtocol },
+    protocol: BleChessProtocol },
   { uuids: { srv:  'f535151e-b2c9-11ec-a0c3-1f8edc817d5a',
              txCh: 'f53515fa-b2c9-11ec-a0c4-5fae981f8945',
              rxCh: 'f53516fe-b2c9-11ec-a0c5-a792c62e5941' },

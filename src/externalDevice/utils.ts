@@ -37,6 +37,10 @@ export function getCommandParams(msg: string): string {
     return msg.substring(msg.indexOf(' ') + 1)
 }
 
+export function hasPromotion(uci: string) {
+    return chessFormat.uciToProm(uci) !== undefined
+}
+
 export function areFensEqual(lfen: string, rfen: string): boolean {
     return lfen.length > rfen.length ? lfen.startsWith(rfen) : rfen.startsWith(lfen)
 }
