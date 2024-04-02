@@ -30,7 +30,6 @@ abstract class BleChessState extends BaseState {
   }
 
   onPeripheralCommand(cmd: string) {
-    this.transitionTo(new Init)
     console.info(`BLE_CHESS: unexpected ${cmd}`); 
     Toast.show({ text: `${i18n('unexpected')}: ${cmd}` })
   }
@@ -91,13 +90,19 @@ class CheckFeatureLastMove extends BleChessState {
   }
 }
 
-class Idle extends ExpectMsg {
+class Idle extends BleChessState {
   onEnter() {
     console.info("BLE_CHESS: enter Idle"); 
   }
   onCentralStateCreated(st: State) {
     this.setState(st)
     this.transitionTo(new SynchronizeVariant)
+  }
+  onPeripheralCommand(cmd: string) {
+    if (cmd.startsWith('msg')) {
+      sendCommandToPeripheral('ok')
+      Toast.show({ text: getCommandParams(cmd) })
+    }
   }
 }
 
