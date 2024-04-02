@@ -31,7 +31,8 @@ abstract class BleChessState extends BaseState {
 
   onPeripheralCommand(cmd: string) {
     this.transitionTo(new Init)
-    Toast.show({ text: `unexpected: ${cmd}` })
+    console.info(`BLE_CHESS: unexpected ${cmd}`); 
+    Toast.show({ text: `${i18n('unexpected')}: ${cmd}` })
   }
 
   onCentralStateCreated(st: State) {
@@ -127,7 +128,7 @@ class SynchronizeFen extends BleChessState {
       this.transitionTo(new SynchronizeLastMove)
     }
     else if (cmd === 'nok') {
-      this.transitionTo(new Unsynchronizd)
+      this.transitionTo(new Unsynchronized)
     }
     else super.onPeripheralCommand(cmd)
   }
@@ -139,20 +140,20 @@ class SynchronizeLastMove extends BleChessState {
     if (this.getFeatures().lastMove && this.getState().lastMove) {
       sendCommandToPeripheral(`last_move ${lastMoveToUci(this.getState())}`)
     }
-    else this.transitionTo(new Synchronizd)
+    else this.transitionTo(new Synchronized)
   }
   onPeripheralCommand(cmd: string) {
     if (cmd === 'ok') {
-      this.transitionTo(new Synchronizd)
+      this.transitionTo(new Synchronized)
     }
     else super.onPeripheralCommand(cmd)
   }
 }
 
-class Unsynchronizd extends ExpectMsg {
+class Unsynchronized extends ExpectMsg {
   onEnter() {
-    console.info("BLE_CHESS: enter Unsynchronizd");    
-    Toast.show({ text: `${i18n('unsynchronizd')}` })
+    console.info("BLE_CHESS: enter Unsynchronized");    
+    Toast.show({ text: i18n('unsynchronized') })
   }
   onCentralStateCreated(st: State) {
     this.setState(st)
@@ -168,7 +169,7 @@ class Unsynchronizd extends ExpectMsg {
       if (areFensSame(peripheralFen, centralFen)) {
         sendCommandToPeripheral('ok')
         this.transitionTo(new SynchronizeLastMove)
-        Toast.show({ text: `${i18n('synchronizd')}` })
+        Toast.show({ text: i18n('synchronized') })
       }
       else sendCommandToPeripheral('nok')
     }
@@ -176,9 +177,9 @@ class Unsynchronizd extends ExpectMsg {
   }
 }
 
-class Synchronizd extends ExpectMsg {
+class Synchronized extends ExpectMsg {
   onEnter() {
-    console.info("BLE_CHESS: enter Synchronizd");    
+    console.info("BLE_CHESS: enter Synchronized");    
   }
   onCentralStateCreated(st: State) {
     this.setState(st)
@@ -198,7 +199,7 @@ class Synchronizd extends ExpectMsg {
     }
     else if (cmd.startsWith('fen')) {
       sendCommandToPeripheral('nok')
-      this.transitionTo(new Unsynchronizd)
+      this.transitionTo(new Unsynchronized)
     }
     else super.onPeripheralCommand(cmd)
   }
@@ -210,7 +211,7 @@ class SynchronizeCentralMove extends BleChessState {
   }
   onPeripheralCommand(cmd: string) {
     if (cmd === 'ok') {
-      this.transitionTo(new Synchronizd)
+      this.transitionTo(new Synchronized)
     }
     else super.onPeripheralCommand(cmd)
   }
@@ -222,12 +223,12 @@ class SynchronizePeripheralMove extends BleChessState {
   }
   onCentralStateChanged() {
     sendCommandToPeripheral('ok')
-    this.transitionTo(this.getState().lastPromotion ? new Promote : new Synchronizd) // TODO 3 hanshake?
+    this.transitionTo(this.getState().lastPromotion ? new Promote : new Synchronized) // TODO 3 hanshake?
   }
   onMoveRejectedByCentral() {
     sendCommandToPeripheral('nok')
-    this.transitionTo(new Synchronizd)
-    Toast.show({ text: `${i18n('rejected')}` })
+    this.transitionTo(new Synchronized)
+    Toast.show({ text: i18n('rejected') })
   }
 }
 
@@ -238,7 +239,7 @@ class Promote extends BleChessState {
   }
   onPeripheralCommand(cmd: string) {
     if (cmd === 'ok') {
-      this.transitionTo(new Synchronizd)
+      this.transitionTo(new Synchronized)
     }
     else super.onPeripheralCommand(cmd)
   }
@@ -250,11 +251,11 @@ class SynchronizePeripheralPromotedMove extends BleChessState {
   }
   onCentralStateChanged() {
     sendCommandToPeripheral('ok')
-    this.transitionTo(new Synchronizd)
+    this.transitionTo(new Synchronized)
   }
   onMoveRejectedByCentral() {
     sendCommandToPeripheral('nok')
-    this.transitionTo(new Synchronizd)
-    Toast.show({ text: `${i18n('rejected')}` })
+    this.transitionTo(new Synchronized)
+    Toast.show({ text: i18n('rejected') })
   }
 }
