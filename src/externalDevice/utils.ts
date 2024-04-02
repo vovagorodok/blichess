@@ -24,7 +24,7 @@ export function lastMoveToUci(st: State): string {
 }
 
 export function sendCommandToPeripheral(cmd: string) {
-    console.info(`BLE_CHESS: send_cmd: ${cmd}`); 
+    console.info(`BLE_CHESS: send ${cmd}`); 
     bluetooth.sendCommandToPeripheral(cmd)
 }
 
