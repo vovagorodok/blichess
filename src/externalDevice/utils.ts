@@ -24,6 +24,7 @@ export function lastMoveToUci(st: State): string {
 }
 
 export function sendCommandToPeripheral(cmd: string) {
+    console.info(`BLE_CHESS: send_cmd: ${cmd}`); 
     bluetooth.sendCommandToPeripheral(cmd)
 }
 
@@ -41,8 +42,32 @@ export function isUciWithPromotion(uci: string) {
     return chessFormat.uciToProm(uci) !== undefined
 }
 
-export function areFensEqual(lfen: string, rfen: string): boolean {
-    return lfen.length > rfen.length ? lfen.startsWith(rfen) : rfen.startsWith(lfen)
+export function isUpperCase(str: string) {
+    return str.toUpperCase() === str
+}
+
+export function isLowerCase(str: string) {
+    return str.toLowerCase() === str
+}
+
+export function areFenCharsSame(lchar: string, rchar: string): boolean {
+    return (lchar === '?' || rchar === '?') ||
+           (lchar === 'w' && rchar === 'w') ||
+           (lchar === 'b' && rchar === 'b') ||
+           (lchar === 'w' && isUpperCase(rchar)) ||
+           (isUpperCase(lchar) && rchar === 'w') ||
+           (lchar === 'b' && isLowerCase(rchar)) ||
+           (isLowerCase(lchar) && rchar === 'b') ||
+           (lchar === rchar)
+}
+
+export function areFensSame(lfen: string, rfen: string): boolean {
+    const minLength = Math.min(lfen.length, rfen.length)
+    for (var i = 0; i < minLength; i++) {
+        if (!areFenCharsSame(lfen[i], rfen[i]))
+            return false
+    }
+    return true
 }
 
 export function delay(milliseconds : number) {

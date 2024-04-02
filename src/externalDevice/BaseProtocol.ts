@@ -10,6 +10,7 @@ export class BaseProtocol {
   }
 
   onPeripheralCommand(cmd: string) {
+    console.info(`BLE_CHESS: recv_cmd: ${cmd}`); 
     this.state?.onPeripheralCommand(cmd)
   }
   onCentralStateCreated(st: State) {
