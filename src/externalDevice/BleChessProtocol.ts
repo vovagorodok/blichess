@@ -33,7 +33,6 @@ abstract class BleChessState extends BaseState {
     console.info(`BLE_CHESS: unexpected ${cmd}`); 
     Toast.show({ text: `${i18n('unexpected')}: ${cmd}` })
   }
-
   onCentralStateCreated(st: State) {
     this.setState(st)
   }
