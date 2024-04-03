@@ -51,14 +51,11 @@ export function isLowerCase(str: string) {
 }
 
 export function areFenCharsSame(lchar: string, rchar: string): boolean {
-    return (lchar === '?' || rchar === '?') ||
-           (lchar === 'w' && rchar === 'w') ||
-           (lchar === 'b' && rchar === 'b') ||
+    return lchar === rchar || lchar === '?' || rchar === '?' ||
            (lchar === 'w' && isUpperCase(rchar)) ||
            (isUpperCase(lchar) && rchar === 'w') ||
            (lchar === 'b' && isLowerCase(rchar)) ||
-           (isLowerCase(lchar) && rchar === 'b') ||
-           (lchar === rchar)
+           (isLowerCase(lchar) && rchar === 'b')
 }
 
 export function areFensSame(lfen: string, rfen: string): boolean {
