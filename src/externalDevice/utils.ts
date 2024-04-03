@@ -42,20 +42,14 @@ export function isUciWithPromotion(uci: string) {
     return chessFormat.uciToProm(uci) !== undefined
 }
 
-export function isUpperCase(str: string) {
-    return str.toUpperCase() === str
-}
-
-export function isLowerCase(str: string) {
-    return str.toLowerCase() === str
-}
-
 export function areFenCharsSame(lchar: string, rchar: string): boolean {
-    return lchar === rchar || lchar === '?' || rchar === '?' ||
-           (lchar === 'w' && isUpperCase(rchar)) ||
-           (isUpperCase(lchar) && rchar === 'w') ||
-           (lchar === 'b' && isLowerCase(rchar)) ||
-           (isLowerCase(lchar) && rchar === 'b')
+    return lchar === rchar ||
+           (lchar === '?' && 'prbnkqPRBNKQ'.includes(rchar)) ||
+           (rchar === '?' && 'prbnkqPRBNKQ'.includes(lchar)) ||
+           (lchar === 'w' && 'PRBNKQ'.includes(rchar)) ||
+           (rchar === 'w' && 'PRBNKQ'.includes(lchar)) ||
+           (lchar === 'b' && 'prbnkq'.includes(rchar)) ||
+           (rchar === 'b' && 'prbnkq'.includes(lchar))
 }
 
 export function areFensSame(lfen: string, rfen: string): boolean {
