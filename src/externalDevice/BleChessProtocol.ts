@@ -203,8 +203,15 @@ class Synchronized extends ExpectMsg {
       sendMoveToCentral(move)
     }
     else if (cmd.startsWith('fen')) {
-      sendCommandToPeripheral('nok')
-      this.transitionTo(new Unsynchronized)
+      const peripheralFen = getCommandParams(cmd)
+      const centralFen = genFullFen(this.getState())
+      if (areFensSame(peripheralFen, centralFen)) {
+        sendCommandToPeripheral('ok')
+      }
+      else {
+        sendCommandToPeripheral('nok')
+        this.transitionTo(new Unsynchronized)
+      }
     }
     else super.onPeripheralCommand(cmd)
   }
