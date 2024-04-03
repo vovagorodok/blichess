@@ -30,7 +30,8 @@ abstract class BleChessState extends BaseState {
   }
 
   onPeripheralCommand(cmd: string) {
-    console.info(`BLE_CHESS: unexpected ${cmd}`); 
+    console.info(`BLE_CHESS: unexpected ${cmd}`)
+    sendCommandToPeripheral('nok')
     Toast.show({ text: `${i18n('unexpected')}: ${cmd}` })
   }
   onCentralStateCreated(st: State) {
@@ -86,6 +87,7 @@ class Idle extends BleChessState {
       sendCommandToPeripheral('ok')
       Toast.show({ text: getCommandParams(cmd) })
     }
+    else sendCommandToPeripheral('nok')
   }
 }
 
