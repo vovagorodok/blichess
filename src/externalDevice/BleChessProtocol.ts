@@ -39,16 +39,6 @@ abstract class BleChessState extends BaseState {
   }
 }
 
-class ExpectMsg extends BleChessState {
-  onPeripheralCommand(cmd: string) {
-    if (cmd.startsWith('msg')) {
-      sendCommandToPeripheral('ok')
-      Toast.show({ text: getCommandParams(cmd) })
-    }
-    else super.onPeripheralCommand(cmd)
-  }
-}
-
 class Init extends BleChessState {
   onEnter() {
     this.transitionTo(new CheckFeatureMsg)
@@ -141,6 +131,16 @@ class SynchronizeLastMove extends BleChessState {
   onPeripheralCommand(cmd: string) {
     if (cmd === 'ok') {
       this.transitionTo(new Synchronized)
+    }
+    else super.onPeripheralCommand(cmd)
+  }
+}
+
+class ExpectMsg extends BleChessState {
+  onPeripheralCommand(cmd: string) {
+    if (cmd.startsWith('msg')) {
+      sendCommandToPeripheral('ok')
+      Toast.show({ text: getCommandParams(cmd) })
     }
     else super.onPeripheralCommand(cmd)
   }
