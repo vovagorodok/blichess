@@ -51,14 +51,12 @@ class ExpectMsg extends BleChessState {
 
 class Init extends BleChessState {
   onEnter() {
-    console.info("BLE_CHESS: enter Init"); 
     this.transitionTo(new CheckFeatureMsg)
   }
 }
 
 class CheckFeatureMsg extends BleChessState {
   onEnter() {
-    console.info("BLE_CHESS: enter CheckFeatureMsg"); 
     sendCommandToPeripheral('feature msg')
   }
   onPeripheralCommand(cmd: string) {
@@ -75,7 +73,6 @@ class CheckFeatureMsg extends BleChessState {
 
 class CheckFeatureLastMove extends BleChessState {
   onEnter() {
-    console.info("BLE_CHESS: enter CheckFeatureLastMove"); 
     sendCommandToPeripheral('feature last_move')
   }
   onPeripheralCommand(cmd: string) {
@@ -91,9 +88,6 @@ class CheckFeatureLastMove extends BleChessState {
 }
 
 class Idle extends BleChessState {
-  onEnter() {
-    console.info("BLE_CHESS: enter Idle"); 
-  }
   onCentralStateCreated(st: State) {
     this.setState(st)
     this.transitionTo(new SynchronizeVariant)
@@ -108,7 +102,6 @@ class Idle extends BleChessState {
 
 class SynchronizeVariant extends BleChessState {
   onEnter() {
-    console.info("BLE_CHESS: enter SynchronizeVariant"); 
     // sendCommandToPeripheral(`variant ${this.getState().variant}`)
     sendCommandToPeripheral("variant standard") // TODO implement variant
   }
@@ -125,7 +118,6 @@ class SynchronizeVariant extends BleChessState {
 
 class SynchronizeFen extends BleChessState {
   onEnter() {
-    console.info("BLE_CHESS: enter SynchronizeFen"); 
     sendCommandToPeripheral(`fen ${genFullFen(this.getState())}`)
   }
   onPeripheralCommand(cmd: string) {
@@ -141,7 +133,6 @@ class SynchronizeFen extends BleChessState {
 
 class SynchronizeLastMove extends BleChessState {
   onEnter() {
-    console.info("BLE_CHESS: enter SynchronizeLastMove"); 
     if (this.getFeatures().lastMove && this.getState().lastMove) {
       sendCommandToPeripheral(`last_move ${lastMoveToUci(this.getState())}`)
     }
@@ -157,7 +148,6 @@ class SynchronizeLastMove extends BleChessState {
 
 class Unsynchronized extends ExpectMsg {
   onEnter() {
-    console.info("BLE_CHESS: enter Unsynchronized");    
     Toast.show({ text: i18n('unsynchronized') })
   }
   onCentralStateCreated(st: State) {
@@ -183,9 +173,6 @@ class Unsynchronized extends ExpectMsg {
 }
 
 class Synchronized extends ExpectMsg {
-  onEnter() {
-    console.info("BLE_CHESS: enter Synchronized");    
-  }
   onCentralStateCreated(st: State) {
     this.setState(st)
     this.transitionTo(new SynchronizeVariant)
@@ -218,9 +205,6 @@ class Synchronized extends ExpectMsg {
 }
 
 class SynchronizeCentralMove extends BleChessState {
-  onEnter() {
-    console.info("BLE_CHESS: enter SynchronizeCentralMove");    
-  }
   onPeripheralCommand(cmd: string) {
     if (cmd === 'ok') {
       this.transitionTo(new Synchronized)
@@ -230,9 +214,6 @@ class SynchronizeCentralMove extends BleChessState {
 }
 
 class SynchronizePeripheralMove extends BleChessState {
-  onEnter() {
-    console.info("BLE_CHESS: enter SynchronizePeripheralMove");    
-  }
   onCentralStateChanged() {
     sendCommandToPeripheral('ok')
     this.transitionTo(this.getState().lastPromotion ? new Promote : new Synchronized) // TODO 3 hanshake?
@@ -246,7 +227,6 @@ class SynchronizePeripheralMove extends BleChessState {
 
 class Promote extends BleChessState {
   onEnter() {
-    console.info("BLE_CHESS: enter Promote");   
     sendCommandToPeripheral(`promote ${lastMoveToUci(this.getState())}`)
   }
   onPeripheralCommand(cmd: string) {
@@ -258,9 +238,6 @@ class Promote extends BleChessState {
 }
 
 class SynchronizePeripheralPromotedMove extends BleChessState {
-  onEnter() {
-    console.info("BLE_CHESS: enter SynchronizePeripheralPromotedMove");    
-  }
   onCentralStateChanged() {
     sendCommandToPeripheral('ok')
     this.transitionTo(new Synchronized)
