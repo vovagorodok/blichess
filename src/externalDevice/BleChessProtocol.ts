@@ -8,7 +8,8 @@ export class BleChessProtocol extends BaseProtocol {
   roundState = makeDefaults()
   features = new BleChessFeatures
 
-  init() {
+  init(st: State) {
+    this.roundState = st
     this.transitionTo(new Init)
   }
 }
@@ -78,6 +79,11 @@ class CheckFeatureLastMove extends BleChessState {
 }
 
 class Idle extends BleChessState {
+  onEnter() {
+    if (this.getState().pieces.size) {
+      this.transitionTo(new SynchronizeVariant)
+    }
+  }
   onCentralStateCreated(st: State) {
     this.setState(st)
     this.transitionTo(new SynchronizeVariant)

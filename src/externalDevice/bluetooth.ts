@@ -2,6 +2,7 @@ import { BleClient, BleDevice, textToDataView, dataViewToText } from '@capacitor
 import settings from '../settings'
 import redraw from '../utils/redraw'
 import i18n from '../i18n'
+import { State, makeDefaults } from '../chessground/state'
 import { Toast } from '@capacitor/toast'
 import { BleChessProtocol } from './BleChessProtocol'
 import { dummyProtocol } from './DummyProtocol'
@@ -26,6 +27,7 @@ const SUPPOTRED_SERVICES: ChessService[] = [
 class BluetoothConnection {
   isConnected: boolean = false
   protocol: any = dummyProtocol
+  centralState: State = makeDefaults()
   private uuids?: ChessServiceUUIDs
 
   private getDeviceId(): string {
@@ -62,7 +64,7 @@ class BluetoothConnection {
     await BleClient.connect(this.getDeviceId(), deviceId => this.onDisconnect(deviceId))
     await this.setupService()
     await this.registerCallback()
-    this.protocol.init()
+    this.protocol.init(this.centralState)
     this.isConnected = true
     Toast.show({ text: i18n('connectedToBluetoothDevice') })
   }
@@ -96,6 +98,9 @@ const bluetoothConnection = new BluetoothConnection
 export default {
   protocol() {
     return bluetoothConnection.protocol
+  },
+  saveCentralState(st: State) {
+    bluetoothConnection.centralState = st
   },
   sendCommandToPeripheral(cmd: string) {
     bluetoothConnection.sendCommandToPeripheral(cmd)

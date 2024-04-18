@@ -7,6 +7,7 @@ let callback: MoveCallback | undefined
 export default {
   onCentralStateCreated(st: State) {
     bluetooth.protocol().onCentralStateCreated(st)
+    bluetooth.saveCentralState(st)
   },
   onCentralStateChanged() {
     bluetooth.protocol().onCentralStateChanged()
