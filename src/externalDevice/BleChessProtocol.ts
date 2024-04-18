@@ -1,5 +1,5 @@
 import { BaseProtocol, BaseState } from './BaseProtocol'
-import { isUciWithPromotion, genFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, areFensSame } from './utils'
+import { isUciWithPromotion, isCentralStateCreated, genFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, areFensSame } from './utils'
 import { State, makeDefaults } from '../chessground/state'
 import { Toast } from '@capacitor/toast'
 import i18n from '../i18n'
@@ -67,23 +67,19 @@ class CheckFeatureLastMove extends BleChessState {
     sendCommandToPeripheral('feature last_move')
   }
   onPeripheralCommand(cmd: string) {
+    const isCreated = isCentralStateCreated(this.getState())
     if (cmd === 'ok') {
       this.getFeatures().lastMove = true
-      this.transitionTo(new Idle)
+      this.transitionTo(isCreated ? new SynchronizeVariant : new Idle)
     }
     else if (cmd === 'nok') {
-      this.transitionTo(new Idle)
+      this.transitionTo(isCreated ? new SynchronizeVariant : new Idle)
     }
     else super.onPeripheralCommand(cmd)
   }
 }
 
 class Idle extends BleChessState {
-  onEnter() {
-    if (this.getState().pieces.size) {
-      this.transitionTo(new SynchronizeVariant)
-    }
-  }
   onCentralStateCreated(st: State) {
     this.setState(st)
     this.transitionTo(new SynchronizeVariant)

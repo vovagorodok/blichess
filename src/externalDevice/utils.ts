@@ -4,6 +4,10 @@ import fen from '../chessground/fen'
 import bluetooth from './bluetooth'
 import external from '../externalDevice'
 
+export function isCentralStateCreated(st: State): boolean {
+    return st.pieces.size !== 0
+}
+
 export function isUserTurn(st: State): boolean {
     return st.otb || st.orientation === st.turnColor
 }
@@ -38,7 +42,7 @@ export function getCommandParams(cmd: string): string {
     return cmd.substring(cmd.indexOf(' ') + 1)
 }
 
-export function isUciWithPromotion(uci: string) {
+export function isUciWithPromotion(uci: string): boolean {
     return chessFormat.uciToProm(uci) !== undefined
 }
 
