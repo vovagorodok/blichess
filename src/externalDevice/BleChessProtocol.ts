@@ -218,8 +218,13 @@ class SynchronizeCentralMove extends BleChessState {
 
 class SynchronizePeripheralMove extends BleChessState {
   onCentralStateChanged() {
-    sendCommandToPeripheral('ok')
-    this.transitionTo(this.getState().lastPromotion ? new Promote : new Synchronized) // TODO 3 hanshake?
+    if (this.getState().lastPromotion) {
+      this.transitionTo(new Promote)
+    }
+    else {
+      sendCommandToPeripheral('ok')
+      this.transitionTo(new Synchronized)
+    }
   }
   onMoveRejectedByCentral() {
     sendCommandToPeripheral('nok')
