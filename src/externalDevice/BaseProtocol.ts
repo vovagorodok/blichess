@@ -6,12 +6,10 @@ export class BaseProtocol {
   transitionTo(state: BaseState) {
     this.state = state
     this.state.setContext(this)
-    console.info(`BLE_CHESS: enter ${state.constructor.name}`)
     this.state.onEnter()
   }
 
   onPeripheralCommand(cmd: string) {
-    console.info(`BLE_CHESS: recv ${cmd}`)
     this.state?.onPeripheralCommand(cmd)
   }
   onCentralStateCreated(st: State) {
