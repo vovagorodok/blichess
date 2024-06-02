@@ -66,13 +66,13 @@ class CheckFeatureLastMove extends BleChessState {
     sendCommandToPeripheral('feature last_move')
   }
   onPeripheralCommand(cmd: string) {
-    const isCreated = isCentralStateCreated(this.getState())
+    const isRoundOngoing = isCentralStateCreated(this.getState())
     if (cmd === 'ok') {
       this.getFeatures().lastMove = true
-      this.transitionTo(isCreated ? new SynchronizeVariant : new Idle)
+      this.transitionTo(isRoundOngoing ? new SynchronizeVariant : new Idle)
     }
     else if (cmd === 'nok') {
-      this.transitionTo(isCreated ? new SynchronizeVariant : new Idle)
+      this.transitionTo(isRoundOngoing ? new SynchronizeVariant : new Idle)
     }
     else super.onPeripheralCommand(cmd)
   }
