@@ -10,11 +10,11 @@ export default {
     bluetooth.saveCentralState(st)
   },
   onCentralStateChanged() {
-    if (bluetooth.isRepeatedCentralMove()) {
+    if (bluetooth.isRepeatedLastMove()) {
       return;
     }
     bluetooth.protocol().onCentralStateChanged()
-    bluetooth.saveCentralMove()
+    bluetooth.saveLastMove()
   },
   onMoveRejectedByCentral() {
     bluetooth.protocol().onMoveRejectedByCentral()
