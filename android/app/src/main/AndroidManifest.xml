@@ -3,7 +3,7 @@
   package="com.vovagorodok.blichess"
   xmlns:tools="http://schemas.android.com/tools"
   android:versionCode="1"
-  android:versionName="8.0.0+ble1"
+  android:versionName="8.0.0+ble1.0.0"
   android:installLocation="auto">
 
     <uses-permission android:name="android.permission.INTERNET" />
