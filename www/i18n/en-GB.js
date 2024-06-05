@@ -1372,5 +1372,12 @@ export default {
   "shareGameUrl": "Share game URL",
   "playOnline": "Play online",
   "playOffline": "Play offline",
+  "bluetooth": "Bluetooth",
+  "connectedToBluetoothDevice": "Connected to bluetooth device",
+  "disconnectedFromBluetoothDevice": "Disconnected from bluetooth device",
+  "rejected": "Rejected",
+  "synchronized": "Synchronized",
+  "unsynchronized": "Unsynchronized",
+  "unexpected": "Unexpected",
   "bgThemeSyncWithSystem": "Sync with system"
 }

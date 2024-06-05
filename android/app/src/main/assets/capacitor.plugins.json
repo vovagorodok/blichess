@@ -1,5 +1,9 @@
 [
 	{
+		"pkg": "@capacitor-community/bluetooth-le",
+		"classpath": "com.capacitorjs.community.plugins.bluetoothle.BluetoothLe"
+	},
+	{
 		"pkg": "@capacitor-community/keep-awake",
 		"classpath": "com.getcapacitor.community.keepawake.KeepAwakePlugin"
 	},
@@ -42,10 +46,6 @@
 	{
 		"pkg": "@capacitor/preferences",
 		"classpath": "com.capacitorjs.plugins.preferences.PreferencesPlugin"
-	},
-	{
-		"pkg": "@capacitor/push-notifications",
-		"classpath": "com.capacitorjs.plugins.pushnotifications.PushNotificationsPlugin"
 	},
 	{
 		"pkg": "@capacitor/share",

@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "org.lichess.mobileapp"
+    namespace "com.vovagorodok.blichess"
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildFeatures {
         buildConfig true
@@ -13,7 +13,7 @@ android {
         //     force 'androidx.core:core-ktx:1.6.0'
         //   }
         // }
-        applicationId "org.lichess.mobileapp"
+        applicationId "com.vovagorodok.blichess"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -50,13 +50,6 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
 
-    // BEGIN NONFREE
-    implementation('com.google.firebase:firebase-messaging:21.0.1') {
-      exclude group: 'com.google.firebase', module: 'firebase-core'
-      exclude group: 'com.google.firebase', module: 'firebase-analytics'
-      exclude group: 'com.google.firebase', module: 'firebase-measurement-connector'
-    }
-    // END NONFREE
 }
 
 apply from: 'capacitor.build.gradle'

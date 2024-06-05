@@ -1397,5 +1397,12 @@ export default {
   "shareGameUrl": "Udostępnij link do gry",
   "playOnline": "Graj online",
   "playOffline": "Graj offline",
+  "bluetooth": "Bluetooth",
+  "connectedToBluetoothDevice": "Podłączono urządzenie bluetooth",
+  "disconnectedFromBluetoothDevice": "Rozłączono urządzenie bluetooth",
+  "rejected": "Odrzucono",
+  "synchronized": "Zsynchronizowano",
+  "unsynchronized": "Rozsynchronizowano",
+  "unexpected": "Nieoczekiwano",
   "bgThemeSyncWithSystem": "Synchronizuj z systemem"
 }

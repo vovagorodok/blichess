@@ -1,10 +1,10 @@
 {
   "name": "lichobile",
-  "version": "8.0.0",
-  "description": "lichess.org mobile application",
+  "version": "8.0.0+ble1.0.0",
+  "description": "lichess.org mobile application with Bluetooth e-boards support",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lichess-org/lichobile.git"
+    "url": "https://github.com/vovagorodok/blichess.git"
   },
   "keywords": [
     "lichess",
@@ -36,7 +36,7 @@
     "@types/jest": "26.0.24",
     "@typescript-eslint/eslint-plugin": "4.28.3",
     "@typescript-eslint/parser": "4.28.3",
-    "autoprefixer-stylus": "0.6.0",
+    "autoprefixer-stylus": "1.0.0",
     "concurrently": "5.3.0",
     "eslint": "7.31.0",
     "http-server": "14.1.1",
@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "@badrap/result": "0.2.6",
+    "@capacitor-community/bluetooth-le": "3.1.4",
     "@capacitor-community/keep-awake": "4.0.0",
     "@capacitor/android": "^5.0.0",
     "@capacitor/app": "^5.0.0",
@@ -68,7 +69,6 @@
     "@capacitor/keyboard": "^5.0.0",
     "@capacitor/network": "^5.0.0",
     "@capacitor/preferences": "^5.0.0",
-    "@capacitor/push-notifications": "^5.0.0",
     "@capacitor/share": "^5.0.0",
     "@capacitor/splash-screen": "^5.0.0",
     "@capacitor/status-bar": "^5.0.0",

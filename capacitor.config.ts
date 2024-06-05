@@ -2,12 +2,12 @@
 import { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
-  appId: 'org.lichess.mobileapp',
-  appName: 'lichess',
+  appId: 'com.vovagorodok.blichess',
+  appName: 'blichess',
   bundledWebRuntime: false,
   webDir: 'www',
   backgroundColor: '000000ff',
-  appendUserAgent: 'Lichobile/8.0.0',
+  appendUserAgent: 'Lichobile/8.0.0+ble1.0.0',
   plugins: {
     SplashScreen: {
       androidSplashResourceName: 'launch_splash',

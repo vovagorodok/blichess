@@ -1385,5 +1385,12 @@ export default {
   "shareGameUrl": "Поділитись посиланням на гру",
   "playOnline": "Грати онлайн",
   "playOffline": "Грати офлайн",
+  "bluetooth": "Bluetooth",
+  "connectedToBluetoothDevice": "Підключено до пристрою bluetooth",
+  "disconnectedFromBluetoothDevice": "Відключено від пристрою bluetooth",
+  "rejected": "Відхилено",
+  "synchronized": "Синхронізовано",
+  "unsynchronized": "Розсинхронізовано",
+  "unexpected": "Неочікувано",
   "bgThemeSyncWithSystem": "Синхронізація з системою"
 }
