@@ -26,7 +26,7 @@ export default class StudyCtrl {
     this.sideMenu = new SideMenuCtrl('right', 'studyMenu', 'studyMenu-backdrop')
     this.analyseCtrl = rootCtrl
 
-    if (data.features.chat && data.chat) {
+    if (data.features.chat && data.chat && session.isConnected()) {
       this.chat = new Chat(
         rootCtrl.socket,
         data.id,

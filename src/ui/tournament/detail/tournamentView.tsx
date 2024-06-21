@@ -61,7 +61,7 @@ export function renderFooter(ctrl: TournamentCtrl): Mithril.Child {
         () => Toast.show({ text: i18n('shareGameUrl'), duration: 'short', position: 'bottom' })
       )}>
       </button>
-      {ctrl.chat ?
+      {ctrl.chat && session.isConnected() ?
         <button key="chatButton" className="action_bar_button fa fa-comments withChip"
           oncreate={helper.ontap(
             ctrl.chat.open,

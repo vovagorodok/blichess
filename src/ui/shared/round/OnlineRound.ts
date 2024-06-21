@@ -131,7 +131,7 @@ export default class OnlineRound implements OnlineRoundInterface {
 
     this.socket = new RoundSocket(this, this.onFeatured)
 
-    this.chat = (session.isKidMode() || this.data.tv || (!this.data.player.spectator && (this.data.game.tournamentId || this.data.opponent.ai))) ? null : new Chat(
+    this.chat = (session.isKidMode() || !session.isConnected() || this.data.tv || (!this.data.player.spectator && (this.data.game.tournamentId || this.data.opponent.ai))) ? null : new Chat(
       this.socket.iface,
       this.data.game.id,
       this.data.chat || [],

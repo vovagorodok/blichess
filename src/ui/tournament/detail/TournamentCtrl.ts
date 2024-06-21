@@ -70,7 +70,7 @@ export default class TournamentCtrl {
       featuredGame
     )
 
-    if (data.chat) {
+    if (data.chat && session.isConnected()) {
       this.chat = new Chat(
         this.socketIface,
         data.id,
