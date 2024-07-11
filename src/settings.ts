@@ -114,7 +114,7 @@ export default {
         ['horsey'],
         ['anarcandy'],
       ],
-      background: prop('bgTheme', 'dark'),
+      background: prop('bgTheme', 'system'),
       board: prop('theme.board', 'brown'),
       piece: prop('theme.piece', 'cburnett')
     },
