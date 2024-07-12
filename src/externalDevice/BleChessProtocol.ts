@@ -94,8 +94,7 @@ class Idle extends BleChessState {
 
 class SynchronizeVariant extends BleChessState {
   onEnter() {
-    // sendCommandToPeripheral(`variant ${this.getState().variant}`)
-    sendCommandToPeripheral("variant standard") // TODO implement variant
+    sendCommandToPeripheral(`variant ${this.getState().variant}`) // TODO: map variants to defined in protocol
   }
   onPeripheralCommand(cmd: string) {
     if (cmd === 'ok') {
@@ -103,6 +102,7 @@ class SynchronizeVariant extends BleChessState {
     }
     else if (cmd === 'nok') {
       this.transitionTo(new Idle)
+      Toast.show({ text: i18n('variantUnsupported') })
     }
     else super.onPeripheralCommand(cmd)
   }

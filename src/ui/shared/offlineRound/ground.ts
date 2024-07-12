@@ -12,6 +12,7 @@ function makeConfig(data: OfflineGameData, sit: GameSituation): cg.InitConfig {
   const lastUci = sit.uciMoves.length ? sit.uciMoves[sit.uciMoves.length - 1] : null
   const pieceMoveConf = settings.game.pieceMove()
   return {
+    variant: data.game.variant.key,
     fen: sit.fen,
     orientation: boardOrientation(data),
     turnColor: sit.player,

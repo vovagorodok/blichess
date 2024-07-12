@@ -3,6 +3,7 @@ import { AnimCurrent } from './anim'
 import { DragCurrent } from './drag'
 
 export interface State {
+  variant: VariantKey
   pieces: cg.Pieces
   orientation: Color // board orientation. white | black
   turnColor: Color // turn to play. white | black
@@ -85,6 +86,7 @@ export interface State {
 
 export function makeDefaults(): State {
   return {
+    variant: 'standard' as VariantKey,
     pieces: new Map(),
     orientation: 'white' as Color,
     turnColor: 'white' as Color,
