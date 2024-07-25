@@ -19,7 +19,7 @@ Fork of lichess.org mobile application with Bluetooth e-boards support
 ![GitHub All Releases](https://img.shields.io/github/downloads/lichess-org/lichobile/total?cacheSeconds=600)
 ![GitHub](https://img.shields.io/badge/license-GPL--3.0-orange)
 
-![lichess mobile screenshots](portfolio.png)
+![lichess mobile screenshots](portfolio.jpg)
 
 Lichess mobile is the lichess.org official application. It is written
 in [TypeScript](http://www.typescriptlang.org/), with a bit of Kotlin and Swift.
