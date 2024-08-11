@@ -8,6 +8,7 @@ export type Pieces = Map<Key, Piece>
 export type PiecesDiff = Map<Key, Piece | null>
 
 export interface InitConfig {
+  variant?: VariantKey
   fen?: string
   orientation?: Color
   turnColor?: Color

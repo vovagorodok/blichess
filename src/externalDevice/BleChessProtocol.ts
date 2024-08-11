@@ -94,8 +94,7 @@ class Idle extends BleChessState {
 
 class SynchronizeVariant extends BleChessState {
   onEnter() {
-    // sendCommandToPeripheral(`variant ${this.getState().variant}`)
-    sendCommandToPeripheral("variant standard") // TODO implement variant
+    sendCommandToPeripheral(`variant ${this.getState().variant}`)
   }
   onPeripheralCommand(cmd: string) {
     if (cmd === 'ok') {
@@ -103,6 +102,7 @@ class SynchronizeVariant extends BleChessState {
     }
     else if (cmd === 'nok') {
       this.transitionTo(new Idle)
+      Toast.show({ text: i18n('variantUnsupported') })
     }
     else super.onPeripheralCommand(cmd)
   }
@@ -129,10 +129,12 @@ class SynchronizeLastMove extends BleChessState {
       sendCommandToPeripheral(`last_move ${lastMoveToUci(this.getState())}`)
     }
     else this.transitionTo(new Synchronized)
+    Toast.show({ text: i18n('synchronized') })
   }
   onPeripheralCommand(cmd: string) {
     if (cmd === 'ok') {
       this.transitionTo(new Synchronized)
+      Toast.show({ text: i18n('synchronized') })
     }
     else super.onPeripheralCommand(cmd)
   }
@@ -166,7 +168,6 @@ class Unsynchronized extends ExpectMsg {
       if (areFensSame(peripheralFen, centralFen)) {
         sendCommandToPeripheral('ok')
         this.transitionTo(new SynchronizeLastMove)
-        Toast.show({ text: i18n('synchronized') })
       }
       else sendCommandToPeripheral('nok')
     }

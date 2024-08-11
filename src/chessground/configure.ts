@@ -20,6 +20,10 @@ export function configureBoard(state: State, config: cg.InitConfig): void {
 
   merge(state, config)
 
+  if (config.variant) {
+    state.variant = config.variant
+  }
+
   // if a fen was provided, replace the pieces
   if (config.fen) {
     state.pieces = fen.read(config.fen)

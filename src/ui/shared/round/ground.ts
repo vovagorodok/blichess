@@ -23,6 +23,7 @@ function makeConfig(data: OnlineGameData, fen: string, flip = false): cg.InitCon
   const pieceMoveConf = settings.game.pieceMove()
 
   return {
+    variant: data.game.variant.key,
     fen: fen,
     orientation: boardOrientation(data, flip),
     turnColor: data.game.player,
