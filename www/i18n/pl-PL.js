@@ -1401,6 +1401,7 @@ export default {
   "connectedToBluetoothDevice": "Podłączono urządzenie bluetooth",
   "disconnectedFromBluetoothDevice": "Rozłączono urządzenie bluetooth",
   "rejected": "Odrzucono",
+  "variantUnsupported": "Wariant nieobsługiwany",
   "synchronized": "Zsynchronizowano",
   "unsynchronized": "Rozsynchronizowano",
   "unexpected": "Nieoczekiwano",

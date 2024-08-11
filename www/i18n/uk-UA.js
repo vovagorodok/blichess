@@ -1389,6 +1389,7 @@ export default {
   "connectedToBluetoothDevice": "Підключено до пристрою bluetooth",
   "disconnectedFromBluetoothDevice": "Відключено від пристрою bluetooth",
   "rejected": "Відхилено",
+  "variantUnsupported": "Варіант не підтримується",
   "synchronized": "Синхронізовано",
   "unsynchronized": "Розсинхронізовано",
   "unexpected": "Неочікувано",
