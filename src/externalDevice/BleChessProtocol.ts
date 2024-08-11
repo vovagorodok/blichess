@@ -129,10 +129,12 @@ class SynchronizeLastMove extends BleChessState {
       sendCommandToPeripheral(`last_move ${lastMoveToUci(this.getState())}`)
     }
     else this.transitionTo(new Synchronized)
+    Toast.show({ text: i18n('synchronized') })
   }
   onPeripheralCommand(cmd: string) {
     if (cmd === 'ok') {
       this.transitionTo(new Synchronized)
+      Toast.show({ text: i18n('synchronized') })
     }
     else super.onPeripheralCommand(cmd)
   }
@@ -174,9 +176,6 @@ class Unsynchronized extends ExpectMsg {
 }
 
 class Synchronized extends ExpectMsg {
-  onEnter() {
-    Toast.show({ text: i18n('synchronized') })
-  }
   onCentralStateCreated(st: State) {
     this.setState(st)
     this.transitionTo(new SynchronizeVariant)
