@@ -273,7 +273,9 @@ function computeSquareClasses(d: State): Map<Key, string> {
       addSquare(squares, d.lastMove[0], 'last-move')
       addSquare(squares, d.lastMove[1], 'last-move')
     }
-    if (d.check && d.highlight.check) addSquare(squares, d.check, 'check')
+    if (d.check && d.highlight.check) {
+      addSquare(squares, d.check, 'check')
+    }
   } else {
     for (const [key, crntralPiece] of centralPieces) {
       const peripheralPiece = peripheralPieces.get(key)
