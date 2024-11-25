@@ -264,16 +264,17 @@ function addSquare(squares: Map<Key, string>, key: Key, klass: string) {
 
 function computeSquareClasses(d: State): Map<Key, string> {
   const squares = new Map()
+  const centralPieces = d.pieces
+  const peripheralPieces = d.peripheral.pieces
+  const arePeripheralPiecesEmpty = !peripheralPieces.size
 
-  if (d.peripheral.isSynchronized) {
+  if (d.peripheral.isSynchronized || arePeripheralPiecesEmpty) {
     if (d.lastMove && d.highlight.lastMove) {
       addSquare(squares, d.lastMove[0], 'last-move')
       addSquare(squares, d.lastMove[1], 'last-move')
     }
     if (d.check && d.highlight.check) addSquare(squares, d.check, 'check')
   } else {
-    const centralPieces = d.pieces
-    const peripheralPieces = d.peripheral.pieces
     for (const [key, crntralPiece] of centralPieces) {
       const peripheralPiece = peripheralPieces.get(key)
       if (!peripheralPiece) {
