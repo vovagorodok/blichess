@@ -75,7 +75,7 @@ export default class Chessground {
     }
 
     if (!isViewOnly) {
-      external.subscribeToPeripheralMoves((orig: Key, dest: Key, prom?: Role) => this.externalMove(orig, dest, prom))
+      external.subscribe(this.externalMove, this.redraw)
       external.onCentralStateCreated(this.state)
     }
 
@@ -83,7 +83,7 @@ export default class Chessground {
   }
 
   detach = () => {
-    external.unsubscribeFromPeripheralMoves()
+    external.unsubscribe()
     this.dom = undefined
     window.removeEventListener('resize', this.onOrientationChange)
   }

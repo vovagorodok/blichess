@@ -2,7 +2,9 @@ import { State } from './chessground/state'
 import bluetooth from './externalDevice/bluetooth'
 
 type MoveCallback = (orig: Key, dest: Key, prom?: Role) => void
-let callback: MoveCallback | undefined
+type StateChangeCallback = () => void
+let onPeripheralMove: MoveCallback | undefined
+let onPeripheralStateChange: StateChangeCallback | undefined
 
 export default {
   onCentralStateCreated(st: State) {
@@ -20,13 +22,19 @@ export default {
     bluetooth.protocol().onMoveRejectedByCentral()
   },
   sendMoveToCentral(orig: Key, dest: Key, prom?: Role) {
-    if (callback)
-      callback(orig, dest, prom)
+    if (onPeripheralMove)
+      onPeripheralMove(orig, dest, prom)
   },
-  subscribeToPeripheralMoves(moveCallback: MoveCallback) {
-    callback = moveCallback
+  sendStateChangeToCentral() {
+    if (onPeripheralStateChange)
+      onPeripheralStateChange()
   },
-  unsubscribeFromPeripheralMoves() {
-    callback = undefined
+  subscribe(moveCallback: MoveCallback, stateChangeCallback: StateChangeCallback) {
+    onPeripheralMove = moveCallback
+    onPeripheralStateChange = stateChangeCallback
+  },
+  unsubscribe() {
+    onPeripheralMove = undefined
+    onPeripheralStateChange = undefined
   }
 }

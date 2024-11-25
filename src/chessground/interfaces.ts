@@ -6,6 +6,7 @@ export type Pos = [Rank, Rank]
 
 export type Pieces = Map<Key, Piece>
 export type PiecesDiff = Map<Key, Piece | null>
+export type PeripheralPieces = Map<Key, PeripheralPiece>
 
 export interface InitConfig {
   variant?: VariantKey

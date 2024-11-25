@@ -1,5 +1,5 @@
 import { BaseProtocol, BaseState } from './BaseProtocol'
-import { isUciWithPromotion, isCentralStateCreated, genFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, areFensSame } from './utils'
+import { isUciWithPromotion, isCentralStateCreated, genFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, areFensSame, sendStateChangeToCentral, applyPeripheralSynchronized, applyPeripheralPieces } from './utils'
 import { State, makeDefaults } from '../chessground/state'
 import { Toast } from '@capacitor/toast'
 import i18n from '../i18n'
@@ -128,12 +128,18 @@ class SynchronizeLastMove extends BleChessState {
     if (this.getFeatures().lastMove && this.getState().lastMove) {
       sendCommandToPeripheral(`last_move ${lastMoveToUci(this.getState())}`)
     }
-    else this.transitionTo(new Synchronized)
-    Toast.show({ text: i18n('synchronized') })
+    else {
+      this.transitionTo(new Synchronized)
+      applyPeripheralSynchronized(this.getState(), true)
+      sendStateChangeToCentral()
+      Toast.show({ text: i18n('synchronized') })
+    }
   }
   onPeripheralCommand(cmd: string) {
     if (cmd === 'ok') {
       this.transitionTo(new Synchronized)
+      applyPeripheralSynchronized(this.getState(), true)
+      sendStateChangeToCentral()
       Toast.show({ text: i18n('synchronized') })
     }
     else super.onPeripheralCommand(cmd)
@@ -152,6 +158,8 @@ class ExpectMsg extends BleChessState {
 
 class Unsynchronized extends ExpectMsg {
   onEnter() {
+    applyPeripheralSynchronized(this.getState(), false)
+    sendStateChangeToCentral()
     Toast.show({ text: i18n('unsynchronized') })
   }
   onCentralStateCreated(st: State) {
@@ -165,11 +173,15 @@ class Unsynchronized extends ExpectMsg {
     if (cmd.startsWith('fen')) {
       const peripheralFen = getCommandParams(cmd)
       const centralFen = genFullFen(this.getState())
+      applyPeripheralPieces(this.getState(), peripheralFen)
       if (areFensSame(peripheralFen, centralFen)) {
         sendCommandToPeripheral('ok')
         this.transitionTo(new SynchronizeLastMove)
       }
-      else sendCommandToPeripheral('nok')
+      else {
+        sendCommandToPeripheral('nok')
+        sendStateChangeToCentral()
+      }
     }
     else super.onPeripheralCommand(cmd)
   }
@@ -195,6 +207,7 @@ class Synchronized extends ExpectMsg {
     else if (cmd.startsWith('fen')) {
       const peripheralFen = getCommandParams(cmd)
       const centralFen = genFullFen(this.getState())
+      applyPeripheralPieces(this.getState(), peripheralFen)
       if (areFensSame(peripheralFen, centralFen)) {
         sendCommandToPeripheral('ok')
       }
