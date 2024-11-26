@@ -130,16 +130,12 @@ class SynchronizeLastMove extends BleChessState {
     }
     else {
       this.transitionTo(new Synchronized)
-      applyPeripheralSynchronized(this.getState(), true)
-      sendStateChangeToCentral()
       Toast.show({ text: i18n('synchronized') })
     }
   }
   onPeripheralCommand(cmd: string) {
     if (cmd === 'ok') {
       this.transitionTo(new Synchronized)
-      applyPeripheralSynchronized(this.getState(), true)
-      sendStateChangeToCentral()
       Toast.show({ text: i18n('synchronized') })
     }
     else super.onPeripheralCommand(cmd)
@@ -164,6 +160,8 @@ class Unsynchronized extends ExpectMsg {
   }
   onCentralStateCreated(st: State) {
     this.setState(st)
+    applyPeripheralSynchronized(this.getState(), true)
+    sendStateChangeToCentral()
     this.transitionTo(new SynchronizeVariant)
   }
   onCentralStateChanged() {
@@ -176,6 +174,8 @@ class Unsynchronized extends ExpectMsg {
       applyPeripheralPieces(this.getState(), peripheralFen)
       if (areFensSame(peripheralFen, centralFen)) {
         sendCommandToPeripheral('ok')
+        applyPeripheralSynchronized(this.getState(), true)
+        sendStateChangeToCentral()
         this.transitionTo(new SynchronizeLastMove)
       }
       else {
