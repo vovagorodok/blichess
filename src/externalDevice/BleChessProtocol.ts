@@ -32,7 +32,7 @@ abstract class BleChessState extends BaseState {
 
   onPeripheralCommand(cmd: string) {
     sendCommandToPeripheral('nok')
-    Toast.show({ text: `${i18n('unexpected')}: ${cmd}` })
+    Toast.show({ text: `${i18n('unexpected')}: ${this.constructor.name}: ${cmd}` })
   }
   onCentralStateCreated(st: State) {
     this.setState(st)
