@@ -233,7 +233,7 @@ export default class Chessground {
     }, this)
   }
 
-  externalMove(orig: Key, dest: Key, prom?: Role): void {
+  externalMove = (orig: Key, dest: Key, prom?: Role): void => {
     const result = anim(state => {
       return board.userMove(state, orig, dest, prom)
     }, this)
