@@ -165,6 +165,8 @@ class Unsynchronized extends ExpectMsg {
     this.transitionTo(new SynchronizeVariant)
   }
   onCentralStateChanged() {
+    applyPeripheralSynchronized(this.getState(), true)
+    sendStateChangeToCentral()
     this.transitionTo(new SynchronizeFen)
   }
   onPeripheralCommand(cmd: string) {
