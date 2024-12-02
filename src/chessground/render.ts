@@ -277,12 +277,12 @@ function computeSquareClasses(d: State): Map<Key, string> {
       addSquare(squares, d.check, 'check')
     }
   } else {
-    for (const [key, crntralPiece] of centralPieces) {
+    for (const [key, centralPiece] of centralPieces) {
       const peripheralPiece = peripheralPieces.get(key)
       if (!peripheralPiece) {
         addSquare(squares, key, 'piece-add')
-      } else if ((peripheralPiece.role && peripheralPiece.role !== crntralPiece.role) ||
-                 (peripheralPiece.color && peripheralPiece.color !== crntralPiece.color)) {
+      } else if ((peripheralPiece.role && peripheralPiece.role !== centralPiece.role) ||
+                 (peripheralPiece.color && peripheralPiece.color !== centralPiece.color)) {
         addSquare(squares, key, 'piece-replace')
       }
     }
