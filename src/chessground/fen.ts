@@ -27,7 +27,37 @@ const letters = {
   king: 'k'
 }
 
-export function read(fen: string): cg.Pieces {
+export function convertFenToPeripheralPieces(fen: string): cg.PeripheralPieces {
+  const pieces: cg.PeripheralPieces = new Map()
+  let row = 8
+  let col = 0
+  for (let i = 0; i < fen.length; i++) {
+    const c = fen[i]
+    switch (c) {
+      case ' ': return pieces
+      case '/':
+        --row
+        if (row === 0) return pieces
+        col = 0
+        break
+      default: {
+        const nb = ~~c
+        if (nb) col += nb
+        else {
+          ++col
+          const role = c.toLowerCase()
+          pieces.set(util.pos2key([col, row] as cg.Pos), {
+            role: 'wb?'.includes(role) ? undefined : roles[role],
+            color: role === '?' ? undefined : role === 'w' ? 'white' : c === role ? 'black' : 'white'
+          })
+        }
+      }
+    }
+  }
+  return pieces
+}
+
+export function convertFenToPieces(fen: string): cg.Pieces {
   if (fen === 'start') fen = initial
   const pieces: cg.Pieces = new Map()
   let row = 8
@@ -67,7 +97,7 @@ export function read(fen: string): cg.Pieces {
   return pieces
 }
 
-function write(pieces: cg.Pieces) {
+function convertPiecesToFen(pieces: cg.Pieces) {
   return [8, 7, 6, 5, 4, 3, 2].reduce(
     function(str, nb) {
       return str.replace(new RegExp(Array(nb + 1).join('1'), 'g'), String(nb))
@@ -84,7 +114,7 @@ function write(pieces: cg.Pieces) {
 }
 
 export default {
-  initial,
-  read,
-  write
+  convertFenToPeripheralPieces,
+  convertFenToPieces,
+  convertPiecesToFen
 }

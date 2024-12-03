@@ -82,6 +82,10 @@ export interface State {
     select?: (key: Key) => void
   }
   prev: cg.PrevData
+  peripheral: {
+    isSynchronized: boolean,
+    pieces: cg.PeripheralPieces
+  }
 }
 
 export function makeDefaults(): State {
@@ -152,6 +156,10 @@ export function makeDefaults(): State {
       bounds: null,
       turnColor: null,
       otbMode: null
+    },
+    peripheral: {
+      isSynchronized: true,
+      pieces: new Map()
     }
   }
 }

@@ -75,7 +75,7 @@ export default class Chessground {
     }
 
     if (!isViewOnly) {
-      external.subscribeToPeripheralMoves((orig: Key, dest: Key, prom?: Role) => this.externalMove(orig, dest, prom))
+      external.subscribe(this.externalMove, this.redraw)
       external.onCentralStateCreated(this.state)
     }
 
@@ -83,7 +83,7 @@ export default class Chessground {
   }
 
   detach = () => {
-    external.unsubscribeFromPeripheralMoves()
+    external.unsubscribe()
     this.dom = undefined
     window.removeEventListener('resize', this.onOrientationChange)
   }
@@ -127,7 +127,7 @@ export default class Chessground {
   }
 
   getFen = (): string => {
-    return fen.write(this.state.pieces)
+    return fen.convertPiecesToFen(this.state.pieces)
   }
 
   getMaterialDiff(): cg.MaterialDiff {
@@ -233,7 +233,7 @@ export default class Chessground {
     }, this)
   }
 
-  externalMove(orig: Key, dest: Key, prom?: Role): void {
+  externalMove = (orig: Key, dest: Key, prom?: Role): void => {
     const result = anim(state => {
       return board.userMove(state, orig, dest, prom)
     }, this)

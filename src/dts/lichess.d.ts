@@ -92,6 +92,11 @@ interface Piece {
   promoted?: boolean
 }
 
+interface PeripheralPiece {
+  role: Role | undefined
+  color: Color | undefined
+}
+
 interface Variant {
   key: VariantKey
   name: string

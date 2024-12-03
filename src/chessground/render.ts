@@ -264,12 +264,35 @@ function addSquare(squares: Map<Key, string>, key: Key, klass: string) {
 
 function computeSquareClasses(d: State): Map<Key, string> {
   const squares = new Map()
-  if (d.lastMove && d.highlight.lastMove) {
-    addSquare(squares, d.lastMove[0], 'last-move')
-    addSquare(squares, d.lastMove[1], 'last-move')
+  const centralPieces = d.pieces
+  const peripheralPieces = d.peripheral.pieces
+  const arePeripheralPiecesEmpty = !peripheralPieces.size
+
+  if (d.peripheral.isSynchronized || arePeripheralPiecesEmpty) {
+    if (d.lastMove && d.highlight.lastMove) {
+      addSquare(squares, d.lastMove[0], 'last-move')
+      addSquare(squares, d.lastMove[1], 'last-move')
+    }
+    if (d.check && d.highlight.check) {
+      addSquare(squares, d.check, 'check')
+    }
+  } else {
+    for (const [key, centralPiece] of centralPieces) {
+      const peripheralPiece = peripheralPieces.get(key)
+      if (!peripheralPiece) {
+        addSquare(squares, key, 'piece-add')
+      } else if ((peripheralPiece.role && peripheralPiece.role !== centralPiece.role) ||
+                 (peripheralPiece.color && peripheralPiece.color !== centralPiece.color)) {
+        addSquare(squares, key, 'piece-replace')
+      }
+    }
+    for (const key of peripheralPieces.keys()) {
+      if (!centralPieces.has(key)) {
+        addSquare(squares, key, 'piece-remove')
+      }
+    }
   }
 
-  if (d.check && d.highlight.check) addSquare(squares, d.check, 'check')
   if (d.selected) {
     addSquare(squares, d.selected, 'selected')
     if (d.movable.showDests) {
