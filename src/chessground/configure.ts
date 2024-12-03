@@ -26,7 +26,7 @@ export function configureBoard(state: State, config: cg.InitConfig): void {
 
   // if a fen was provided, replace the pieces
   if (config.fen) {
-    state.pieces = fen.read(config.fen)
+    state.pieces = fen.convertFenToPieces(config.fen)
   }
 
   if (Object.prototype.hasOwnProperty.call(config, 'check')) board.setCheck(state, config.check || false)
@@ -47,7 +47,7 @@ export function setNewBoardState(d: State, config: cg.SetConfig): void {
   if (!config) return
 
   if (config.fen) {
-    d.pieces = fen.read(config.fen)
+    d.pieces = fen.convertFenToPieces(config.fen)
   }
 
   if (config.orientation !== undefined) d.orientation = config.orientation

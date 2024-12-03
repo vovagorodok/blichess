@@ -12,12 +12,12 @@ export function isUserTurn(st: State): boolean {
   return st.otb || st.orientation === st.turnColor
 }
 
-export function fenTurnColor(st: State): string {
+export function createFenTurnColor(st: State): string {
   return st.turnColor === 'white' ? 'w' : 'b'
 }
 
-export function genFullFen(st: State): string {
-  return [fen.write(st.pieces), fenTurnColor(st)].join(' ')
+export function createFullFen(st: State): string {
+  return [fen.convertPiecesToFen(st.pieces), createFenTurnColor(st)].join(' ')
 }
 
 export function applyPeripheralSynchronized(st: State, isSynchronized: boolean) {
@@ -25,7 +25,7 @@ export function applyPeripheralSynchronized(st: State, isSynchronized: boolean) 
 }
 
 export function applyPeripheralPieces(st: State, peripheralFen: string) {
-  st.peripheral.pieces = fen.readPeripheral(peripheralFen)
+  st.peripheral.pieces = fen.convertFenToPeripheralPieces(peripheralFen)
 }
 
 export function lastMoveToUci(st: State): string {

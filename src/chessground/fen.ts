@@ -27,7 +27,7 @@ const letters = {
   king: 'k'
 }
 
-export function readPeripheral(fen: string): cg.PeripheralPieces {
+export function convertFenToPeripheralPieces(fen: string): cg.PeripheralPieces {
   const pieces: cg.PeripheralPieces = new Map()
   let row = 8
   let col = 0
@@ -57,7 +57,7 @@ export function readPeripheral(fen: string): cg.PeripheralPieces {
   return pieces
 }
 
-export function read(fen: string): cg.Pieces {
+export function convertFenToPieces(fen: string): cg.Pieces {
   if (fen === 'start') fen = initial
   const pieces: cg.Pieces = new Map()
   let row = 8
@@ -97,7 +97,7 @@ export function read(fen: string): cg.Pieces {
   return pieces
 }
 
-function write(pieces: cg.Pieces) {
+function convertPiecesToFen(pieces: cg.Pieces) {
   return [8, 7, 6, 5, 4, 3, 2].reduce(
     function(str, nb) {
       return str.replace(new RegExp(Array(nb + 1).join('1'), 'g'), String(nb))
@@ -114,8 +114,7 @@ function write(pieces: cg.Pieces) {
 }
 
 export default {
-  initial,
-  readPeripheral,
-  read,
-  write
+  convertFenToPeripheralPieces,
+  convertFenToPieces,
+  convertPiecesToFen
 }

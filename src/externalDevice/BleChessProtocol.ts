@@ -1,5 +1,5 @@
 import { BaseProtocol, BaseState } from './BaseProtocol'
-import { isUciWithPromotion, isCentralStateCreated, genFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, areFensSame, sendStateChangeToCentral, applyPeripheralSynchronized, applyPeripheralPieces } from './utils'
+import { isUciWithPromotion, isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, areFensSame, sendStateChangeToCentral, applyPeripheralSynchronized, applyPeripheralPieces } from './utils'
 import { State, makeDefaults } from '../chessground/state'
 import { Toast } from '@capacitor/toast'
 import i18n from '../i18n'
@@ -110,7 +110,7 @@ class SynchronizeVariant extends BleChessState {
 
 class SynchronizeFen extends BleChessState {
   onEnter() {
-    sendCommandToPeripheral(`fen ${genFullFen(this.getState())}`)
+    sendCommandToPeripheral(`fen ${createFullFen(this.getState())}`)
   }
   onPeripheralCommand(cmd: string) {
     if (cmd === 'ok') {
@@ -172,7 +172,7 @@ class Unsynchronized extends ExpectMsg {
   onPeripheralCommand(cmd: string) {
     if (cmd.startsWith('fen')) {
       const peripheralFen = getCommandParams(cmd)
-      const centralFen = genFullFen(this.getState())
+      const centralFen = createFullFen(this.getState())
       applyPeripheralPieces(this.getState(), peripheralFen)
       if (areFensSame(peripheralFen, centralFen)) {
         sendCommandToPeripheral('ok')
@@ -208,7 +208,7 @@ class Synchronized extends ExpectMsg {
     }
     else if (cmd.startsWith('fen')) {
       const peripheralFen = getCommandParams(cmd)
-      const centralFen = genFullFen(this.getState())
+      const centralFen = createFullFen(this.getState())
       applyPeripheralPieces(this.getState(), peripheralFen)
       if (areFensSame(peripheralFen, centralFen)) {
         sendCommandToPeripheral('ok')

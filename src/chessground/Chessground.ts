@@ -127,7 +127,7 @@ export default class Chessground {
   }
 
   getFen = (): string => {
-    return fen.write(this.state.pieces)
+    return fen.convertPiecesToFen(this.state.pieces)
   }
 
   getMaterialDiff(): cg.MaterialDiff {
