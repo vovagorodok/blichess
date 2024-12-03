@@ -35,7 +35,9 @@ export default [{
       debugger: true,
       sourceMap: false,
     }),
-    release && terser(),
+    release && terser({
+      keep_classnames: true,
+    }),
     visualizer(),
   ],
   onwarn(warning, warn) {
@@ -54,6 +56,8 @@ export default [{
       debugger: true,
       sourceMap: false,
     }),
-    release && terser(),
+    release && terser({
+      keep_classnames: true,
+    }),
   ]
 }]
