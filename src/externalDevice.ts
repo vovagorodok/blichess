@@ -22,12 +22,10 @@ export default {
     bluetooth.protocol().onMoveRejectedByCentral()
   },
   sendMoveToCentral(orig: Key, dest: Key, prom?: Role) {
-    if (onPeripheralMove)
-      onPeripheralMove(orig, dest, prom)
+    onPeripheralMove?.(orig, dest, prom)
   },
   sendStateChangeToCentral() {
-    if (onPeripheralStateChange)
-      onPeripheralStateChange()
+    onPeripheralStateChange?.()
   },
   subscribe(moveCallback: MoveCallback, stateChangeCallback: StateChangeCallback) {
     onPeripheralMove = moveCallback
