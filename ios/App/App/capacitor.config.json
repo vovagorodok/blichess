@@ -20,5 +20,26 @@
 	},
 	"ios": {
 		"scheme": "lichess"
-	}
+	},
+	"packageClassList": [
+		"BluetoothLe",
+		"KeepAwakePlugin",
+		"AppPlugin",
+		"CAPBrowserPlugin",
+		"ClipboardPlugin",
+		"DevicePlugin",
+		"DialogPlugin",
+		"FilesystemPlugin",
+		"HapticsPlugin",
+		"KeyboardPlugin",
+		"CAPNetworkPlugin",
+		"PreferencesPlugin",
+		"SharePlugin",
+		"SplashScreenPlugin",
+		"StatusBarPlugin",
+		"ToastPlugin",
+		"SoundEffectPlugin",
+		"Stockfish",
+		"StockfishVariants"
+	]
 }

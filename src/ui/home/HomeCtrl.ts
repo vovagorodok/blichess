@@ -51,8 +51,8 @@ export default class HomeCtrl {
   public timelineData?: TimelineData
   public offlinePuzzle?: PuzzleData | undefined
 
-  private networkListener: PluginListenerHandle
-  private appStateListener: PluginListenerHandle
+  private networkListener?: PluginListenerHandle
+  private appStateListener?: PluginListenerHandle
 
   constructor(defaultTab?: number) {
     this.corresPool = []
@@ -64,13 +64,13 @@ export default class HomeCtrl {
       this.loadOfflinePuzzle()
     }
 
-    this.networkListener = Network.addListener('networkStatusChange', s => {
+    Network.addListener('networkStatusChange', s => {
       if (s.connected) this.init()
-    })
+    }).then((appStateListener) => this.appStateListener = appStateListener)
 
-    this.appStateListener = App.addListener('appStateChange', (state: AppState) => {
+    App.addListener('appStateChange', (state: AppState) => {
       if (state.isActive) this.init()
-    })
+    }).then((appStateListener) => this.appStateListener = appStateListener)
   }
 
   // workaround for scroll overflow issue on ios
@@ -91,8 +91,8 @@ export default class HomeCtrl {
   }
 
   public unload = () => {
-    this.networkListener.remove()
-    this.appStateListener.remove()
+    this.networkListener?.remove()
+    this.appStateListener?.remove()
   }
 
   public init = () => {
