@@ -58,6 +58,7 @@ export default class HomeCtrl {
     this.corresPool = []
     this.selectedTab = defaultTab || 0
 
+    console.log('VOVAN: hasNetwork:', hasNetwork());
     if (hasNetwork()) {
       this.init()
     } else {
@@ -65,6 +66,7 @@ export default class HomeCtrl {
     }
 
     Network.addListener('networkStatusChange', s => {
+      console.log('VOVAN: Network status changed', s.connectionType, s.connected);
       if (s.connected) this.init()
     }).then((appStateListener) => this.appStateListener = appStateListener)
 

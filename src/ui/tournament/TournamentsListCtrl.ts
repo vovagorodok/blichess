@@ -13,8 +13,10 @@ export default class TournamentsListCtrl {
   constructor(defaultTab?: number) {
     this.currentTab = defaultTab || 0
 
+    console.log('VOVAN: currentTournaments')
     xhr.currentTournaments()
     .then(data => {
+      console.log('VOVAN: currentTournaments success')
       data.started = data.started.filter(supported)
       data.created = data.created.filter(supported)
       data.finished = data.finished.filter(supported)

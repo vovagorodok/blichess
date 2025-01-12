@@ -21,6 +21,10 @@
 	"ios": {
 		"scheme": "lichess"
 	},
+	"server": {
+		"hostname": "lichess.org",
+		"androidScheme": "https"
+	},
 	"packageClassList": [
 		"BluetoothLe",
 		"KeepAwakePlugin",

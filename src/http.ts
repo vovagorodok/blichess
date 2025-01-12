@@ -34,6 +34,8 @@ function addQuerystring(url: string, querystring: string): string {
 // for convenience, this wrapper returns a promise with the response body already
 // extracted
 function request<T>(url: string, type: 'json' | 'text', opts?: RequestOpts, feedback = false): Promise<T> {
+  console.log('VOVAN: request:', url);
+  console.log('VOVAN: request type:', type);
 
   let timeoutId: number
 
