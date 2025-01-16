@@ -35,9 +35,9 @@ const ChessClockScreen: Mithril.Component<Record<string, never>, State> = {
 
     hideStatusBar()
 
-    this.appStateListener = App.addListener('appStateChange', (state: AppState) => {
+    App.addListener('appStateChange', (state: AppState) => {
       if (state.isActive) hideStatusBar()
-    })
+    }).then((appStateListener) => this.appStateListener = appStateListener)
 
     window.addEventListener('resize', hideStatusBar)
 

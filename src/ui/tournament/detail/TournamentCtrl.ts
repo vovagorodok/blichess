@@ -46,7 +46,7 @@ export default class TournamentCtrl {
 
   private pagesCache: PagesCache = {}
 
-  private appStateListener: PluginListenerHandle
+  private appStateListener?: PluginListenerHandle
 
   constructor(data: Tournament) {
     this.id = data.id
@@ -82,9 +82,9 @@ export default class TournamentCtrl {
       )
     }
 
-    this.appStateListener = App.addListener('appStateChange', (state: AppState) => {
+    App.addListener('appStateChange', (state: AppState) => {
       if (state.isActive) this.reload()
-    })
+    }).then((appStateListener) => this.appStateListener = appStateListener)
 
     this.teamColorMap = data.teamBattle ? this.createTeamColorMap (data.teamBattle) : {}
 
@@ -176,7 +176,7 @@ export default class TournamentCtrl {
   }
 
   unload = () => {
-    this.appStateListener.remove()
+    this.appStateListener?.remove()
   }
 
   private scrollToMe = () => {

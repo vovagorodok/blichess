@@ -81,7 +81,7 @@ export default class OnlineRound implements OnlineRoundInterface {
   private blur: boolean
 
   private transientMove: TransientMove
-  private appStateListener: PluginListenerHandle
+  private appStateListener?: PluginListenerHandle
 
   public constructor(
     readonly goingBack: boolean,
@@ -161,9 +161,9 @@ export default class OnlineRound implements OnlineRoundInterface {
     this.makeCorrespondenceClock()
     if (this.correspondenceClock) this.clockIntervId = setInterval(this.correspondenceClockTick, 6000)
 
-    this.appStateListener = App.addListener('appStateChange', (state: AppState) => {
+    App.addListener('appStateChange', (state: AppState) => {
       if (state.isActive) this.onResume()
-    })
+    }).then((appStateListener) => this.appStateListener = appStateListener)
 
     signals.gameBackButton.add(() => {
       if (router.backbutton.stack.length === 0 && !gameApi.isPlayerPlaying(this.data)) {
@@ -688,7 +688,7 @@ export default class OnlineRound implements OnlineRoundInterface {
     this.transientMove.clear()
     if (this.clock) this.clock.unload()
     clearInterval(this.clockIntervId)
-    this.appStateListener.remove()
+    this.appStateListener?.remove()
     signals.gameBackButton.removeAll()
   }
 
