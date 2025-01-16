@@ -20,10 +20,6 @@ const config: CapacitorConfig = {
   },
   ios: {
     scheme: 'lichess',
-  },
-  server: {
-    hostname: 'lichess.org',
-    androidScheme: 'https',
   }
 }
 

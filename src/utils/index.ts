@@ -125,12 +125,6 @@ export function handleXhrError(error: ErrorResponse): void {
   else
     message = 'Something went wrong.'
 
-  console.log('VOVAN: handleXhrError: apiEndPoint: ', globalConfig.apiEndPoint)
-  console.log('VOVAN: handleXhrError: socketEndPoint: ', globalConfig.socketEndPoint)
-  console.log('VOVAN: handleXhrError: status: ', status)
-  console.log('VOVAN: handleXhrError: data: ', data)
-  console.log('VOVAN: handleXhrError: message: ', message)
-
   if (data) {
     if (typeof data === 'string') {
       message += ` ${data}`
