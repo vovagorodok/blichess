@@ -83,6 +83,8 @@ export interface State {
   }
   prev: cg.PrevData
   peripheral: {
+    isMoveRejected: boolean,
+    lastMove: KeyPair | null
     isSynchronized: boolean,
     pieces: cg.PeripheralPieces
   }
@@ -158,6 +160,8 @@ export function makeDefaults(): State {
       otbMode: null
     },
     peripheral: {
+      isMoveRejected: false,
+      lastMove: null,
       isSynchronized: true,
       pieces: new Map()
     }
