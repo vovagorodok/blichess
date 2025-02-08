@@ -20,6 +20,14 @@ export function createFullFen(st: State): string {
   return [fen.convertPiecesToFen(st.pieces), createFenTurnColor(st)].join(' ')
 }
 
+export function applyPeripheralMoveRejected(st: State, isRejected: boolean) {
+  st.peripheral.isMoveRejected = isRejected
+}
+
+export function applyPeripheralLastMove(st: State, uci: string) {
+  st.peripheral.lastMove = chessFormat.uciToMove(uci)
+}
+
 export function applyPeripheralSynchronized(st: State, isSynchronized: boolean) {
   st.peripheral.isSynchronized = isSynchronized
 }

@@ -1,5 +1,5 @@
 import { BaseProtocol, BaseState } from './BaseProtocol'
-import { isUciWithPromotion, isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, areFensSame, sendStateChangeToCentral, applyPeripheralSynchronized, applyPeripheralPieces } from './utils'
+import { isUciWithPromotion, isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, areFensSame, sendStateChangeToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyPeripheralSynchronized, applyPeripheralPieces } from './utils'
 import { State, makeDefaults } from '../chessground/state'
 import { Toast } from '@capacitor/toast'
 import i18n from '../i18n'
@@ -195,12 +195,16 @@ class Synchronized extends ExpectMsg {
     this.transitionTo(new SynchronizeVariant)
   }
   onCentralStateChanged() {
+    applyPeripheralMoveRejected(this.getState(), false)
+    sendStateChangeToCentral()
     sendCommandToPeripheral(`move ${lastMoveToUci(this.getState())}`)
     this.transitionTo(new SynchronizeCentralMove)
   }
   onPeripheralCommand(cmd: string) {
     if (cmd.startsWith('move')) {
       const move = getCommandParams(cmd)
+      applyPeripheralMoveRejected(this.getState(), false)
+      applyPeripheralLastMove(this.getState(), move)
       this.transitionTo(isUciWithPromotion(move) ?
         new SynchronizePeripheralPromotedMove :
         new SynchronizePeripheralMove)
@@ -209,6 +213,7 @@ class Synchronized extends ExpectMsg {
     else if (cmd.startsWith('fen')) {
       const peripheralFen = getCommandParams(cmd)
       const centralFen = createFullFen(this.getState())
+      applyPeripheralMoveRejected(this.getState(), false)
       applyPeripheralPieces(this.getState(), peripheralFen)
       if (areFensSame(peripheralFen, centralFen)) {
         sendCommandToPeripheral('ok')
@@ -244,6 +249,8 @@ class SynchronizePeripheralMove extends BleChessState {
   onMoveRejectedByCentral() {
     sendCommandToPeripheral('nok')
     this.transitionTo(new Synchronized)
+    applyPeripheralMoveRejected(this.getState(), true)
+    sendStateChangeToCentral()
     Toast.show({ text: i18n('rejected') })
   }
 }
@@ -268,6 +275,8 @@ class SynchronizePeripheralPromotedMove extends BleChessState {
   onMoveRejectedByCentral() {
     sendCommandToPeripheral('nok')
     this.transitionTo(new Synchronized)
+    applyPeripheralMoveRejected(this.getState(), true)
+    sendStateChangeToCentral()
     Toast.show({ text: i18n('rejected') })
   }
 }
