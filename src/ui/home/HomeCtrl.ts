@@ -66,7 +66,7 @@ export default class HomeCtrl {
 
     Network.addListener('networkStatusChange', s => {
       if (s.connected) this.init()
-    }).then((appStateListener) => this.appStateListener = appStateListener)
+    }).then((networkListener) => this.networkListener = networkListener)
 
     App.addListener('appStateChange', (state: AppState) => {
       if (state.isActive) this.init()
