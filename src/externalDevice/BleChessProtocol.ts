@@ -182,11 +182,7 @@ class Idle extends BleChessState {
   }
 }
 
-class Round extends BleChessState {
-  onCentralStateCreated(st: State) {
-    this.setState(st)
-    this.transitionTo(new Begin)
-  }
+class Round extends Idle {
   onPeripheralCommand(cmd: string) {
     if (cmd.startsWith(Command.State)) {
       const state = this.getState()
@@ -261,7 +257,7 @@ class Run extends Round {
   }
 }
 
-class CheckPeripheralMove extends BleChessState {
+class CheckPeripheralMove extends Round {
   onCentralStateChanged() {
     const state = this.getState()
     this.transitionTo(new Run)
