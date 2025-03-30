@@ -81,6 +81,7 @@ enum Command {
   Move = 'move',
   Promote = 'promote',
   Check = 'check',
+  Err = 'err',
   Msg = 'msg',
   LastMove = 'last_move',
 }
@@ -137,6 +138,9 @@ abstract class BleChessState extends BaseState {
 
   onPeripheralCommand(cmd: string) {
     if (cmd.startsWith(Command.Msg)) {
+      Toast.show({ text: getCommandParams(cmd) })
+    }
+    else if (cmd.startsWith(Command.Err)) {
       Toast.show({ text: getCommandParams(cmd) })
     }
     else {
