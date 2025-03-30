@@ -28,7 +28,7 @@ export function applyPeripheralLastMove(st: State, uci: string) {
   const move = chessFormat.uciToMove(uci)
   const prom = chessFormat.uciToProm(uci)
   st.peripheral.lastMove = move
-  st.peripheral.lastPromotion = prom !== undefined ? prom : null
+  st.peripheral.lastPromotion = prom || null
 }
 
 export function applyVariantSupported(st: State, isVariantSupported: boolean) {
