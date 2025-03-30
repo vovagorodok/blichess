@@ -9,6 +9,7 @@ import { renderBoard, makeCoords, makeSymmCoords } from './render'
 import { anim, skip as skipAnim } from './anim'
 import * as drag from './drag'
 import external from '../externalDevice'
+import { GameStatus } from '../lichess/interfaces/game'
 
 const pieceScores: { [id: string]: number } = {
   pawn: 1,
@@ -279,9 +280,10 @@ export default class Chessground {
     skipAnim(state => board.cancelMove(state), this)
   }
 
-  stop = () => {
+  stop = (status?: GameStatus) => {
     drag.cancel(this)
     skipAnim(state => board.stop(state), this)
+    external.onCentralStateEnded(status)
   }
 
   explode = (keys: Key[]) => {

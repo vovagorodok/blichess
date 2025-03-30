@@ -630,7 +630,7 @@ export default class OnlineRound implements OnlineRoundInterface {
     d.opponent.offeringDraw = false
 
     this.userJump(this.lastPly())
-    this.chessground.stop()
+    this.chessground.stop(o.status)
 
     if (this.vm.submitFeedback) {
       this.vm.submitFeedback = undefined

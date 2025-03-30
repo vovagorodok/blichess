@@ -1,6 +1,7 @@
 import { BaseProtocol, BaseState } from './BaseProtocol'
-import { isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, sendStateChangeToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyPeripheralSynchronized, applyPeripheralPieces, createIterator } from './utils'
+import { isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, sendStateChangeToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyVariantSupported, applyPeripheralSynchronized, applyPeripheralPieces, createIterator } from './utils'
 import { State, makeDefaults } from '../chessground/state'
+import { GameStatus } from '../lichess/interfaces/game'
 import { Toast } from '@capacitor/toast'
 import i18n from '../i18n'
 
@@ -18,7 +19,19 @@ export class BleChessProtocol extends BaseProtocol {
     horde: this.variants.horde,
     racingKings: this.variants.racingKings,
     crazyhouse: this.variants.crazyHouse,
-    fromPosition: new Support('from_position'),
+  }
+  endReasonsMap = {
+    mate: EndReason.Checkmate,
+    stalemate: EndReason.Stalemate,
+    draw: EndReason.Draw,
+    timeout: EndReason.Timeout,
+    outoftime: EndReason.Timeout,
+    resign: EndReason.Resign,
+    aborted: EndReason.Abort,
+    noStart: EndReason.Undefined,
+    unknownFinish: EndReason.Undefined,
+    cheat: EndReason.Undefined,
+    variantEnd: EndReason.Undefined,
   }
 
   init(st: State) {
@@ -72,6 +85,16 @@ enum Command {
   LastMove = 'last_move',
 }
 
+enum EndReason {
+  Undefined = 'undefined',
+  Checkmate = 'checkmate',
+  Stalemate = 'stalemate',
+  Draw = 'draw',
+  Timeout = 'timeout',
+  Resign = 'resign',
+  Abort = 'abort',
+}
+
 class Features {
   msg = new Support(FeatureName.Msg)
   lastMove = new Support(FeatureName.LastMove)
@@ -105,7 +128,11 @@ abstract class BleChessState extends BaseState {
   }
 
   getVariant(variant: VariantKey): Support {
-    return this.context.variantsMap[variant]
+    return this.context.variantsMap[variant] || this.context.variants.standard
+  }
+
+  getEndReason(status?: GameStatus): EndReason | undefined {
+    return status?.name && this.context.endReasonsMap[status.name]
   }
 
   onPeripheralCommand(cmd: string) {
@@ -183,6 +210,12 @@ class Idle extends BleChessState {
 }
 
 class Round extends Idle {
+  onCentralStateEnded(status?: GameStatus) {
+    const reason = this.getEndReason(status)
+    if (reason) {
+      sendCommandToPeripheral(`${Command.End} ${reason}`)
+    }
+  }
   onPeripheralCommand(cmd: string) {
     if (cmd.startsWith(Command.State)) {
       const state = this.getState()
@@ -218,6 +251,7 @@ class Begin extends Round {
     const state = this.getState()
     const variant = this.getVariant(state.variant)
     sendCommandToPeripheral(`${Command.SetVariant} ${variant.name}`)
+    applyVariantSupported(state, variant.isSupported)
     if (!variant.isSupported) {
       this.transitionTo(new Idle)
       Toast.show({ text: i18n('variantUnsupported') })

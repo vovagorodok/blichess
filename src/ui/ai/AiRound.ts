@@ -329,7 +329,7 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
     this.apply(sit)
     setResult(this, sit.status)
     if (gameStatusApi.finished(this.data)) {
-      this.onGameEnd()
+      this.onGameEnd(sit.status)
     } else if (this.isEngineToMove()) {
       this.engineMove()
     }
@@ -340,12 +340,12 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
   public onThreefoldRepetition = (newStatus: GameStatus) => {
     setResult(this, newStatus)
     this.save()
-    this.onGameEnd()
+    this.onGameEnd(newStatus)
   }
 
-  public onGameEnd = () => {
+  public onGameEnd = (status?: GameStatus) => {
     this.chessground.cancelMove()
-    this.chessground.stop()
+    this.chessground.stop(status)
     setTimeout(() => {
       this.actions.open()
       redraw()
@@ -353,9 +353,10 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
   }
 
   public resign = () => {
-    setResult(this, { id: 31, name: 'resign' }, oppositeColor(this.data.player.color))
+    const status = { id: 31, name: 'resign' }
+    setResult(this, status, oppositeColor(this.data.player.color))
     this.save()
-    this.onGameEnd()
+    this.onGameEnd(status)
   }
 
   private firstPlayerColor(): Color {

@@ -256,10 +256,11 @@ export default class OtbRound implements OtbRoundInterface, PromotingInterface {
   }
 
   private onFlag = (color: Color) => {
+    const status = {id: 35, name: 'outoftime'}
     const winner = color === 'white' ? 'black' : 'white'
-    setResult(this, {id: 35, name: 'outoftime'}, winner)
+    setResult(this, status, winner)
     sound.dong()
-    this.onGameEnd()
+    this.onGameEnd(status)
     this.save()
   }
 
@@ -290,7 +291,7 @@ export default class OtbRound implements OtbRoundInterface, PromotingInterface {
     this.apply(sit)
     setResult(this, sit.status)
     if (gameStatusApi.finished(this.data)) {
-      this.onGameEnd()
+      this.onGameEnd(sit.status)
     }
     this.save()
     redraw()
@@ -299,14 +300,14 @@ export default class OtbRound implements OtbRoundInterface, PromotingInterface {
   public onThreefoldRepetition = (newStatus: GameStatus) => {
     setResult(this, newStatus)
     this.save()
-    this.onGameEnd()
+    this.onGameEnd(newStatus)
   }
 
-  public onGameEnd = () => {
+  public onGameEnd = (status?: GameStatus) => {
     if (this.clock && this.clock.isRunning()) {
       this.clock.startStop()
     }
-    this.chessground.stop()
+    this.chessground.stop(status)
     setTimeout(() => {
       this.actions.open()
       redraw()

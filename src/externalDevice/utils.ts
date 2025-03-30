@@ -31,6 +31,10 @@ export function applyPeripheralLastMove(st: State, uci: string) {
   st.peripheral.lastPromotion = prom !== undefined ? prom : null
 }
 
+export function applyVariantSupported(st: State, isVariantSupported: boolean) {
+  st.peripheral.isVariantSupported = isVariantSupported
+}
+
 export function applyPeripheralSynchronized(st: State, isSynchronized: boolean) {
   st.peripheral.isSynchronized = isSynchronized
 }
