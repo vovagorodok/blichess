@@ -40,16 +40,6 @@ export class BleChessProtocol extends BaseProtocol {
   }
 }
 
-class Support {
-  name: string
-  isSupported: boolean
-
-  constructor(name: string) {
-    this.name = name
-    this.isSupported = false
-  }
-}
-
 enum FeatureName {
   Msg = 'msg',
   LastMove = 'last_move',
@@ -94,6 +84,16 @@ enum EndReason {
   Timeout = 'timeout',
   Resign = 'resign',
   Abort = 'abort',
+}
+
+class Support {
+  name: string
+  isSupported: boolean
+
+  constructor(name: string) {
+    this.name = name
+    this.isSupported = false
+  }
 }
 
 class Features {
