@@ -263,11 +263,11 @@ class Begin extends Round {
     }
     this.transitionTo(new Run)
     sendCommandToPeripheral(`${Command.Begin} ${createFullFen(state)}`)
-    if (state.check) {
-      sendCommandToPeripheral(`${Command.Check} ${state.check}`)
-    }
     if (this.getFeatures().lastMove.isSupported && state.lastMove) {
       sendCommandToPeripheral(`${Command.LastMove} ${lastMoveToUci(state)}`)
+    }
+    if (state.check) {
+      sendCommandToPeripheral(`${Command.Check} ${state.check}`)
     }
   }
 }
