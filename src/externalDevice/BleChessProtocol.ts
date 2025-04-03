@@ -41,8 +41,9 @@ export class BleChessProtocol extends BaseProtocol {
 }
 
 enum FeatureName {
-  Msg = 'msg',
   LastMove = 'last_move',
+  Check = 'check',
+  Msg = 'msg',
 }
 
 enum VariantName {
@@ -70,10 +71,10 @@ enum Command {
   End = 'end',
   Move = 'move',
   Promote = 'promote',
-  Check = 'check',
   Err = 'err',
-  Msg = 'msg',
   LastMove = 'last_move',
+  Check = 'check',
+  Msg = 'msg',
 }
 
 enum EndReason {
@@ -97,8 +98,9 @@ class Support {
 }
 
 class Features {
-  msg = new Support(FeatureName.Msg)
   lastMove = new Support(FeatureName.LastMove)
+  check = new Support(FeatureName.Check)
+  msg = new Support(FeatureName.Msg)
 }
 
 class Variants {
@@ -266,7 +268,7 @@ class Begin extends Round {
     if (this.getFeatures().lastMove.isSupported && state.lastMove) {
       sendCommandToPeripheral(`${Command.LastMove} ${lastMoveToUci(state)}`)
     }
-    if (state.check) {
+    if (this.getFeatures().check.isSupported && state.check) {
       sendCommandToPeripheral(`${Command.Check} ${state.check}`)
     }
   }
@@ -276,7 +278,7 @@ class Run extends Round {
   onCentralStateChanged() {
     const state = this.getState()
     sendCommandToPeripheral(`${Command.Move} ${lastMoveToUci(state)}`)
-    if (state.check) {
+    if (this.getFeatures().check.isSupported && state.check) {
       sendCommandToPeripheral(`${Command.Check} ${state.check}`)
     }
     applyPeripheralMoveRejected(state, false)
@@ -305,7 +307,7 @@ class CheckPeripheralMove extends Round {
     else {
       sendCommandToPeripheral(Command.Ok)
     }
-    if (state.check) {
+    if (this.getFeatures().check.isSupported && state.check) {
       sendCommandToPeripheral(`${Command.Check} ${state.check}`)
     }
   }
