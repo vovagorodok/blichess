@@ -40,13 +40,13 @@ export class BleChessProtocol extends BaseProtocol {
   }
 }
 
-enum FeatureName {
+enum Feature {
   LastMove = 'last_move',
   Check = 'check',
   Msg = 'msg',
 }
 
-enum VariantName {
+enum Variant {
   Standard = "standard",
   Chess960 = "chess_960",
   ThreeCheck = "3_check",
@@ -98,21 +98,21 @@ class Support {
 }
 
 class Features {
-  lastMove = new Support(FeatureName.LastMove)
-  check = new Support(FeatureName.Check)
-  msg = new Support(FeatureName.Msg)
+  lastMove = new Support(Feature.LastMove)
+  check = new Support(Feature.Check)
+  msg = new Support(Feature.Msg)
 }
 
 class Variants {
-  standard = new Support(VariantName.Standard)
-  chess960 = new Support(VariantName.Chess960)
-  threeCheck = new Support(VariantName.ThreeCheck)
-  atomic = new Support(VariantName.Atomic)
-  kingOfTheHill = new Support(VariantName.KingOfTheHill)
-  antiChess = new Support(VariantName.AntiChess)
-  horde = new Support(VariantName.Horde)
-  racingKings = new Support(VariantName.RacingKings)
-  crazyHouse = new Support(VariantName.CrazyHouse)
+  standard = new Support(Variant.Standard)
+  chess960 = new Support(Variant.Chess960)
+  threeCheck = new Support(Variant.ThreeCheck)
+  atomic = new Support(Variant.Atomic)
+  kingOfTheHill = new Support(Variant.KingOfTheHill)
+  antiChess = new Support(Variant.AntiChess)
+  horde = new Support(Variant.Horde)
+  racingKings = new Support(Variant.RacingKings)
+  crazyHouse = new Support(Variant.CrazyHouse)
 }
 
 abstract class BleChessState extends BaseState {
