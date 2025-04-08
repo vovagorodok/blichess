@@ -76,7 +76,7 @@ export function delay(milliseconds : number) {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
-export function* createIterator<T extends object>(instance: T): Generator<T[keyof T]> {
+export function* createValuesIterator<T extends object>(instance: T): Generator<T[keyof T]> {
   for (const key of Object.keys(instance) as (keyof T)[]) {
     yield instance[key];
   }

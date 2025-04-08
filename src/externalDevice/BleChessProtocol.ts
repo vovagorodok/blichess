@@ -1,5 +1,5 @@
 import { BaseProtocol, BaseState } from './BaseProtocol'
-import { isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, sendStateChangeToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyVariantSupported, applyPeripheralSynchronized, applyPeripheralPieces, createIterator } from './utils'
+import { isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, sendStateChangeToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyVariantSupported, applyPeripheralSynchronized, applyPeripheralPieces, createValuesIterator } from './utils'
 import { State, makeDefaults } from '../chessground/state'
 import { GameStatus } from '../lichess/interfaces/game'
 import { Toast } from '@capacitor/toast'
@@ -156,13 +156,19 @@ abstract class BleChessState extends BaseState {
 
 class Init extends BleChessState {
   onEnter() {
-    const checkVariants = new CheckIteration(createIterator(this.getVariants()), Command.Variant, new Initialized)
-    const checkFeatures = new CheckIteration(createIterator(this.getFeatures()), Command.Feature, checkVariants)
+    const checkVariants = new CheckSupportsIteration(
+      createValuesIterator(this.getVariants()),
+      Command.Variant,
+      new Initialized)
+    const checkFeatures = new CheckSupportsIteration(
+      createValuesIterator(this.getFeatures()),
+      Command.Feature,
+      checkVariants)
     this.transitionTo(checkFeatures)
   }
 }
 
-class CheckIteration extends BleChessState {
+class CheckSupportsIteration extends BleChessState {
   private iterator: any
   private current: any
   private command: Command
@@ -204,14 +210,14 @@ class CheckIteration extends BleChessState {
 class Initialized extends BleChessState {
   onEnter() {
     const isRoundOngoing = isCentralStateCreated(this.getState())
-    this.transitionTo(isRoundOngoing ? new Begin : new Idle)
+    this.transitionTo(isRoundOngoing ? new RoundBegin : new Idle)
   }
 }
 
 class Idle extends BleChessState {
   onCentralStateCreated(st: State) {
     this.setState(st)
-    this.transitionTo(new Begin)
+    this.transitionTo(new RoundBegin)
   }
 }
 
@@ -252,7 +258,7 @@ class Round extends Idle {
   }
 }
 
-class Begin extends Round {
+class RoundBegin extends Round {
   onEnter() {
     const state = this.getState()
     const variant = this.getVariant(state.variant)
@@ -263,7 +269,7 @@ class Begin extends Round {
       Toast.show({ text: i18n('variantUnsupported') })
       return
     }
-    this.transitionTo(new Run)
+    this.transitionTo(new RoundOngoing)
     sendCommandToPeripheral(`${Command.Begin} ${createFullFen(state)}`)
     if (this.getFeatures().lastMove.isSupported && state.lastMove) {
       sendCommandToPeripheral(`${Command.LastMove} ${lastMoveToUci(state)}`)
@@ -274,7 +280,7 @@ class Begin extends Round {
   }
 }
 
-class Run extends Round {
+class RoundOngoing extends Round {
   onCentralStateChanged() {
     const state = this.getState()
     sendCommandToPeripheral(`${Command.Move} ${lastMoveToUci(state)}`)
@@ -300,7 +306,7 @@ class Run extends Round {
 class CheckPeripheralMove extends Round {
   onCentralStateChanged() {
     const state = this.getState()
-    this.transitionTo(new Run)
+    this.transitionTo(new RoundOngoing)
     if (state.lastPromotion && !state.peripheral.lastPromotion) {
       sendCommandToPeripheral(`${Command.Promote} ${lastMoveToUci(state)}`)
     }
@@ -313,7 +319,7 @@ class CheckPeripheralMove extends Round {
   }
   onMoveRejectedByCentral() {
     const state = this.getState()
-    this.transitionTo(new Run)
+    this.transitionTo(new RoundOngoing)
     sendCommandToPeripheral(Command.Nok)
     applyPeripheralMoveRejected(state, true)
     sendStateChangeToCentral()
