@@ -22,7 +22,7 @@ export class BleChessProtocol extends BaseProtocol {
   }
   endReasonsMap = {
     mate: EndReason.Checkmate,
-    stalemate: EndReason.Stalemate,
+    stalemate: EndReason.Draw,
     draw: EndReason.Draw,
     timeout: EndReason.Timeout,
     outoftime: EndReason.Timeout,
@@ -80,7 +80,6 @@ enum Command {
 enum EndReason {
   Undefined = 'undefined',
   Checkmate = 'checkmate',
-  Stalemate = 'stalemate',
   Draw = 'draw',
   Timeout = 'timeout',
   Resign = 'resign',
