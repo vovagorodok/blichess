@@ -44,6 +44,7 @@ enum Feature {
   LastMove = 'last_move',
   Check = 'check',
   Msg = 'msg',
+  Side = 'side',
 }
 
 enum Variant {
@@ -75,6 +76,7 @@ enum Command {
   LastMove = 'last_move',
   Check = 'check',
   Msg = 'msg',
+  Side = 'side',
 }
 
 enum EndReason {
@@ -84,6 +86,12 @@ enum EndReason {
   Timeout = 'timeout',
   Resign = 'resign',
   Abort = 'abort',
+}
+
+enum Side {
+  White = 'w',
+  Black = 'b',
+  Both = '?'
 }
 
 class Support {
@@ -100,6 +108,7 @@ class Features {
   lastMove = new Support(Feature.LastMove)
   check = new Support(Feature.Check)
   msg = new Support(Feature.Msg)
+  side = new Support(Feature.Side)
 }
 
 class Variants {
@@ -275,6 +284,12 @@ class RoundBegin extends Round {
       return
     }
     this.transitionTo(new RoundOngoing)
+
+    if (this.getFeatures().side.isSupported) {
+      const side = state.otb ?
+        Side.Both : (state.orientation === 'white' ? Side.White : Side.Black)
+      sendCommandToPeripheral(`${Command.Side} ${side}`)
+    }
     sendCommandToPeripheral(`${Command.Begin} ${createFullFen(state)}`)
     if (this.getFeatures().lastMove.isSupported && state.lastMove) {
       sendCommandToPeripheral(`${Command.LastMove} ${lastMoveToUci(state)}`)

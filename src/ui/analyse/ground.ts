@@ -18,6 +18,7 @@ function makeConfig(
     turnColor: config.turnColor,
     orientation,
     coordinates: settings.game.coords(),
+    otb: config.otb,
     movable: {
       free: false,
       color: config.movableColor,

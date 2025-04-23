@@ -728,7 +728,8 @@ export default class AnalyseCtrl implements PromotingInterface {
       movableColor: this.gameOver() ? null : color,
       dests: dests || null,
       check: !!node.check,
-      lastMove: node.uci ? chessFormat.uciToMoveOrDrop(node.uci) : null
+      lastMove: node.uci ? chessFormat.uciToMoveOrDrop(node.uci) : null,
+      otb: true,
     }
 
     this.cgConfig = config
