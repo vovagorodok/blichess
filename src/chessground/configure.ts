@@ -46,6 +46,10 @@ export function configureBoard(state: State, config: cg.InitConfig): void {
 export function setNewBoardState(d: State, config: cg.SetConfig): void {
   if (!config) return
 
+  if (config.variant) {
+    d.variant = config.variant
+  }
+
   if (config.fen) {
     d.pieces = fen.convertFenToPieces(config.fen)
   }

@@ -81,6 +81,7 @@ export interface InitConfig {
 
 export interface SetConfig {
   orientation?: Color
+  variant?: VariantKey
   fen?: string
   lastMove?: KeyPair | null
   check?: Color | boolean

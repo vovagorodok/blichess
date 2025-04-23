@@ -721,6 +721,7 @@ export default class AnalyseCtrl implements PromotingInterface {
     const color: Color = util.plyColor(node.ply)
     const dests = chessFormat.readDests(node.dests)
     const config = {
+      variant: this.data.game.variant.key,
       fen: node.fen,
       turnColor: color,
       orientation: this.settings.s.flip ? oppositeColor(this.orientation) : this.orientation,

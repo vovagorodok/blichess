@@ -292,6 +292,7 @@ export default class OnlineRound implements OnlineRoundInterface {
     this.vm.ply = ply
     const s = this.plyStep(ply)
     const config: cg.SetConfig = {
+      variant: this.data.game.variant.key,
       fen: s.fen,
       lastMove: s.uci ? chessFormat.uciToMove(s.uci) : null,
       check: s.check,

@@ -11,7 +11,7 @@ function makeConfig(
 ): cg.InitConfig {
   const pieceMoveConf = settings.game.pieceMove()
   return {
-    variant: undefined,
+    variant: config.variant,
     fen: config.fen,
     check: config.check,
     lastMove: config.lastMove,
