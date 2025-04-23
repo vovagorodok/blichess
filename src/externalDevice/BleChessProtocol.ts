@@ -218,6 +218,11 @@ class Idle extends BleChessState {
     this.setState(st)
     this.transitionTo(new RoundBegin)
   }
+  onCentralStateCanceled() {
+    this.transitionTo(new Idle)
+    sendCommandToPeripheral(`${Command.End} ${EndReason.Abort}`)
+    Toast.show({ text: i18n('undoUnsupported') })
+  }
 }
 
 class Round extends Idle {

@@ -19,6 +19,9 @@ export class BaseProtocol {
   onCentralStateChanged() {
     this.state?.onCentralStateChanged()
   }
+  onCentralStateCanceled() {
+    this.state?.onCentralStateCanceled()
+  }
   onCentralStateEnded(status?: GameStatus) {
     this.state?.onCentralStateEnded(status)
   }
@@ -42,6 +45,7 @@ export class BaseState {
   onPeripheralCommand(_cmd: string) {}
   onCentralStateCreated(_st: State) {}
   onCentralStateChanged() {}
+  onCentralStateCanceled() {}
   onCentralStateEnded(_status?: GameStatus) {}
   onMoveRejectedByCentral() {}
 }

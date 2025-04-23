@@ -1289,6 +1289,7 @@ export default {
   "disconnectedFromBluetoothDevice": "Disconnected from bluetooth device",
   "rejected": "Rejected",
   "variantUnsupported": "Variant unsupported",
+  "undoUnsupported": "Undo unsupported",
   "synchronized": "Synchronized",
   "unsynchronized": "Unsynchronized",
   "unexpected": "Unexpected",

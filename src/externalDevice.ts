@@ -19,6 +19,9 @@ export default {
     bluetooth.protocol().onCentralStateChanged()
     bluetooth.saveLastMove()
   },
+  onCentralStateCanceled() {
+    bluetooth.protocol().onCentralStateCanceled()
+  },
   onCentralStateEnded(status?: GameStatus) {
     bluetooth.protocol().onCentralStateEnded(status)
   },

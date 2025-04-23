@@ -3,6 +3,8 @@ export class DummyProtocol {
   onPeripheralCommand() {}
   onCentralStateCreated() {}
   onCentralStateChanged() {}
+  onCentralStateCanceled() {}
+  onCentralStateEnded() {}
   onMoveRejectedByCentral() {}
 }
 export const dummyProtocol = new DummyProtocol

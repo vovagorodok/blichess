@@ -278,6 +278,7 @@ export default class Chessground {
   cancelMove = (): void => {
     drag.cancel(this)
     skipAnim(state => board.cancelMove(state), this)
+    external.onCentralStateCanceled()
   }
 
   stop = (status?: GameStatus) => {
