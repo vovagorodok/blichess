@@ -344,7 +344,6 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
   }
 
   public onGameEnd = (status?: GameStatus) => {
-    this.chessground.cancelMove()
     this.chessground.stop(status)
     setTimeout(() => {
       this.actions.open()

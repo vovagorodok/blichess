@@ -229,6 +229,7 @@ class Round extends Idle {
   onCentralStateEnded(status?: GameStatus) {
     const reason = this.getEndReason(status)
     if (reason) {
+      this.transitionTo(new Idle)
       sendCommandToPeripheral(`${Command.End} ${reason}`)
     }
   }
