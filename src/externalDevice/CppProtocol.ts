@@ -5,7 +5,7 @@ import { GameStatus } from '../lichess/interfaces/game'
 import { Toast } from '@capacitor/toast'
 import i18n from '../i18n'
 
-export class BleChessProtocol extends BaseProtocol {
+export class CppProtocol extends BaseProtocol {
   roundState = makeDefaults()
   features = new Features
   variants = new Variants

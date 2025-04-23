@@ -4,7 +4,7 @@ import redraw from '../utils/redraw'
 import i18n from '../i18n'
 import { State, makeDefaults } from '../chessground/state'
 import { Toast } from '@capacitor/toast'
-import { BleChessProtocol } from './BleChessProtocol'
+import { CppProtocol } from './CppProtocol'
 import { dummyProtocol } from './DummyProtocol'
 
 interface ChessServiceUUIDs {
@@ -21,7 +21,7 @@ const SUPPOTRED_SERVICES: ChessService[] = [
   { uuids: { srv:  'f5351050-b2c9-11ec-a0c0-b3bc53b08d33',
              txCh: 'f53513ca-b2c9-11ec-a0c1-639b8957db99',
              rxCh: 'f535147e-b2c9-11ec-a0c2-8bbd706ec4e6' },
-    protocol: BleChessProtocol }
+    protocol: CppProtocol }
 ]
 
 class BluetoothConnection {
