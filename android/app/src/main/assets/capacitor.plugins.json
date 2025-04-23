@@ -65,7 +65,7 @@
 	},
 	{
 		"pkg": "capacitor-sound-effect",
-		"classpath": "org.lichess.plugin.SoundEffectPlugin"
+		"classpath": "org.lidraughts.plugin.SoundEffectPlugin"
 	},
 	{
 		"pkg": "capacitor-stockfish",
