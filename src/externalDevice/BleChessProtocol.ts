@@ -1,12 +1,38 @@
 import { BaseProtocol, BaseState } from './BaseProtocol'
-import { isUciWithPromotion, isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, areFensSame, sendStateChangeToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyPeripheralSynchronized, applyPeripheralPieces } from './utils'
+import { isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, sendStateChangeToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyVariantSupported, applyPeripheralSynchronized, applyPeripheralPieces, createValuesIterator } from './utils'
 import { State, makeDefaults } from '../chessground/state'
+import { GameStatus } from '../lichess/interfaces/game'
 import { Toast } from '@capacitor/toast'
 import i18n from '../i18n'
 
 export class BleChessProtocol extends BaseProtocol {
   roundState = makeDefaults()
-  features = new BleChessFeatures
+  features = new Features
+  variants = new Variants
+  variantsMap = {
+    standard: this.variants.standard,
+    chess960: this.variants.chess960,
+    antichess: this.variants.antiChess,
+    kingOfTheHill: this.variants.kingOfTheHill,
+    threeCheck: this.variants.threeCheck,
+    atomic: this.variants.atomic,
+    horde: this.variants.horde,
+    racingKings: this.variants.racingKings,
+    crazyhouse: this.variants.crazyHouse,
+  }
+  endReasonsMap = {
+    mate: EndReason.Checkmate,
+    stalemate: EndReason.Draw,
+    draw: EndReason.Draw,
+    timeout: EndReason.Timeout,
+    outoftime: EndReason.Timeout,
+    resign: EndReason.Resign,
+    aborted: EndReason.Abort,
+    noStart: EndReason.Undefined,
+    unknownFinish: EndReason.Undefined,
+    cheat: EndReason.Undefined,
+    variantEnd: EndReason.Undefined,
+  }
 
   init(st: State) {
     this.roundState = st
@@ -14,9 +40,78 @@ export class BleChessProtocol extends BaseProtocol {
   }
 }
 
-class BleChessFeatures {
-  msg: boolean = false
-  lastMove: boolean = false
+enum Feature {
+  LastMove = 'last_move',
+  Check = 'check',
+  Msg = 'msg',
+}
+
+enum Variant {
+  Standard = "standard",
+  Chess960 = "chess_960",
+  ThreeCheck = "3_check",
+  Atomic = "atomic",
+  KingOfTheHill = "king_of_the_hill",
+  AntiChess = "anti_chess",
+  Horde = "horde",
+  RacingKings = "racing_kings",
+  CrazyHouse = "crazy_house",
+}
+
+enum Command {
+  Ok = 'ok',
+  Nok = 'nok',
+  Feature = 'feature',
+  Variant = 'variant',
+  SetVariant = 'set_variant',
+  Begin = 'begin',
+  State = 'state',
+  Sync = 'sync',
+  Unsync = 'unsync',
+  End = 'end',
+  Move = 'move',
+  Promote = 'promote',
+  Err = 'err',
+  LastMove = 'last_move',
+  Check = 'check',
+  Msg = 'msg',
+}
+
+enum EndReason {
+  Undefined = 'undefined',
+  Checkmate = 'checkmate',
+  Draw = 'draw',
+  Timeout = 'timeout',
+  Resign = 'resign',
+  Abort = 'abort',
+}
+
+class Support {
+  name: string
+  isSupported: boolean
+
+  constructor(name: string) {
+    this.name = name
+    this.isSupported = false
+  }
+}
+
+class Features {
+  lastMove = new Support(Feature.LastMove)
+  check = new Support(Feature.Check)
+  msg = new Support(Feature.Msg)
+}
+
+class Variants {
+  standard = new Support(Variant.Standard)
+  chess960 = new Support(Variant.Chess960)
+  threeCheck = new Support(Variant.ThreeCheck)
+  atomic = new Support(Variant.Atomic)
+  kingOfTheHill = new Support(Variant.KingOfTheHill)
+  antiChess = new Support(Variant.AntiChess)
+  horde = new Support(Variant.Horde)
+  racingKings = new Support(Variant.RacingKings)
+  crazyHouse = new Support(Variant.CrazyHouse)
 }
 
 abstract class BleChessState extends BaseState {
@@ -26,13 +121,32 @@ abstract class BleChessState extends BaseState {
   getState(): State {
     return this.context.roundState
   }
-  getFeatures(): BleChessFeatures {
+  getFeatures(): Features {
     return this.context.features
   }
 
+  getVariants(): Variants {
+    return this.context.variants
+  }
+
+  getVariant(variant: VariantKey): Support {
+    return this.context.variantsMap[variant] || this.context.variants.standard
+  }
+
+  getEndReason(status?: GameStatus): EndReason | undefined {
+    return status?.name && this.context.endReasonsMap[status.name]
+  }
+
   onPeripheralCommand(cmd: string) {
-    sendCommandToPeripheral('nok')
-    Toast.show({ text: `${i18n('unexpected')}: ${this.constructor.name}: ${cmd}` })
+    if (cmd.startsWith(Command.Msg)) {
+      Toast.show({ text: getCommandParams(cmd) })
+    }
+    else if (cmd.startsWith(Command.Err)) {
+      Toast.show({ text: getCommandParams(cmd) })
+    }
+    else {
+      Toast.show({ text: `${i18n('unexpected')}: ${this.constructor.name}: ${cmd}` })
+    }
   }
   onCentralStateCreated(st: State) {
     this.setState(st)
@@ -41,241 +155,172 @@ abstract class BleChessState extends BaseState {
 
 class Init extends BleChessState {
   onEnter() {
-    this.transitionTo(new CheckFeatureMsg)
+    const checkVariants = new CheckSupportsIteration(
+      createValuesIterator(this.getVariants()),
+      Command.Variant,
+      new Initialized)
+    const checkFeatures = new CheckSupportsIteration(
+      createValuesIterator(this.getFeatures()),
+      Command.Feature,
+      checkVariants)
+    this.transitionTo(checkFeatures)
   }
 }
 
-class CheckFeatureMsg extends BleChessState {
+class CheckSupportsIteration extends BleChessState {
+  private iterator: any
+  private current: any
+  private command: Command
+  private nextState: BaseState
+
+  constructor(iterator: any, command: Command, nextState: BaseState) {
+    super()
+    this.iterator = iterator
+    this.current = iterator.next()
+    this.command = command
+    this.nextState = nextState
+  }
   onEnter() {
-    sendCommandToPeripheral('feature msg')
+    this.handleCurrent()
   }
   onPeripheralCommand(cmd: string) {
-    if (cmd === 'ok') {
-      this.getFeatures().msg = true
-      this.transitionTo(new CheckFeatureLastMove)
+    if (cmd === Command.Ok) {
+      this.current.value.isSupported = true
+      this.current = this.iterator.next()
+      this.handleCurrent()
     }
-    else if (cmd === 'nok') {
-      this.transitionTo(new CheckFeatureLastMove)
+    else if (cmd === Command.Nok) {
+      this.current.value.isSupported = false
+      this.current = this.iterator.next()
+      this.handleCurrent()
     }
     else super.onPeripheralCommand(cmd)
   }
+  private handleCurrent() {
+    if (this.current.done) {
+      this.transitionTo(this.nextState)
+    }
+    else {
+      sendCommandToPeripheral(`${this.command} ${this.current.value.name}`)
+    }
+  }
 }
 
-class CheckFeatureLastMove extends BleChessState {
+class Initialized extends BleChessState {
   onEnter() {
-    sendCommandToPeripheral('feature last_move')
-  }
-  onPeripheralCommand(cmd: string) {
     const isRoundOngoing = isCentralStateCreated(this.getState())
-    if (cmd === 'ok') {
-      this.getFeatures().lastMove = true
-      this.transitionTo(isRoundOngoing ? new SynchronizeVariant : new Idle)
-    }
-    else if (cmd === 'nok') {
-      this.transitionTo(isRoundOngoing ? new SynchronizeVariant : new Idle)
-    }
-    else super.onPeripheralCommand(cmd)
+    this.transitionTo(isRoundOngoing ? new RoundBegin : new Idle)
   }
 }
 
 class Idle extends BleChessState {
   onCentralStateCreated(st: State) {
     this.setState(st)
-    this.transitionTo(new SynchronizeVariant)
-  }
-  onPeripheralCommand(cmd: string) {
-    if (cmd.startsWith('msg')) {
-      sendCommandToPeripheral('ok')
-      Toast.show({ text: getCommandParams(cmd) })
-    }
-    else sendCommandToPeripheral('nok')
+    this.transitionTo(new RoundBegin)
   }
 }
 
-class SynchronizeVariant extends BleChessState {
-  onEnter() {
-    sendCommandToPeripheral(`variant ${this.getState().variant}`)
+class Round extends Idle {
+  onCentralStateEnded(status?: GameStatus) {
+    const reason = this.getEndReason(status)
+    if (reason) {
+      sendCommandToPeripheral(`${Command.End} ${reason}`)
+    }
   }
   onPeripheralCommand(cmd: string) {
-    if (cmd === 'ok') {
-      this.transitionTo(new SynchronizeFen)
+    if (cmd.startsWith(Command.State)) {
+      const state = this.getState()
+      const peripheralFen = getCommandParams(cmd)
+      applyPeripheralPieces(state, peripheralFen)
+      applyPeripheralMoveRejected(state, false)
+      sendStateChangeToCentral()
     }
-    else if (cmd === 'nok') {
+    else if (cmd.startsWith(Command.Sync)) {
+      const state = this.getState()
+      const peripheralFen = getCommandParams(cmd)
+      applyPeripheralPieces(state, peripheralFen)
+      applyPeripheralSynchronized(state, true)
+      applyPeripheralMoveRejected(state, false)
+      sendStateChangeToCentral()
+      Toast.show({ text: i18n('synchronized') })
+    }
+    else if (cmd.startsWith(Command.Unsync)) {
+      const state = this.getState()
+      const peripheralFen = getCommandParams(cmd)
+      applyPeripheralPieces(state, peripheralFen)
+      applyPeripheralSynchronized(state, false)
+      applyPeripheralMoveRejected(state, false)
+      sendStateChangeToCentral()
+      Toast.show({ text: i18n('unsynchronized') })
+    }
+    else super.onPeripheralCommand(cmd)
+  }
+}
+
+class RoundBegin extends Round {
+  onEnter() {
+    const state = this.getState()
+    const variant = this.getVariant(state.variant)
+    sendCommandToPeripheral(`${Command.SetVariant} ${variant.name}`)
+    applyVariantSupported(state, variant.isSupported)
+    if (!variant.isSupported) {
       this.transitionTo(new Idle)
       Toast.show({ text: i18n('variantUnsupported') })
+      return
     }
-    else super.onPeripheralCommand(cmd)
+    this.transitionTo(new RoundOngoing)
+    sendCommandToPeripheral(`${Command.Begin} ${createFullFen(state)}`)
+    if (this.getFeatures().lastMove.isSupported && state.lastMove) {
+      sendCommandToPeripheral(`${Command.LastMove} ${lastMoveToUci(state)}`)
+    }
+    if (this.getFeatures().check.isSupported && state.check) {
+      sendCommandToPeripheral(`${Command.Check} ${state.check}`)
+    }
   }
 }
 
-class SynchronizeFen extends BleChessState {
-  onEnter() {
-    sendCommandToPeripheral(`fen ${createFullFen(this.getState())}`)
-  }
-  onPeripheralCommand(cmd: string) {
-    if (cmd === 'ok') {
-      this.transitionTo(new SynchronizeLastMove)
-    }
-    else if (cmd === 'nok') {
-      this.transitionTo(new Unsynchronized)
-    }
-    else super.onPeripheralCommand(cmd)
-  }
-}
-
-class SynchronizeLastMove extends BleChessState {
-  onEnter() {
-    if (this.getFeatures().lastMove && this.getState().lastMove) {
-      sendCommandToPeripheral(`last_move ${lastMoveToUci(this.getState())}`)
-    }
-    else {
-      this.transitionTo(new Synchronized)
-      Toast.show({ text: i18n('synchronized') })
-    }
-  }
-  onPeripheralCommand(cmd: string) {
-    if (cmd === 'ok') {
-      this.transitionTo(new Synchronized)
-      Toast.show({ text: i18n('synchronized') })
-    }
-    else super.onPeripheralCommand(cmd)
-  }
-}
-
-class ExpectMsg extends BleChessState {
-  onPeripheralCommand(cmd: string) {
-    if (cmd.startsWith('msg')) {
-      sendCommandToPeripheral('ok')
-      Toast.show({ text: getCommandParams(cmd) })
-    }
-    else super.onPeripheralCommand(cmd)
-  }
-}
-
-class Unsynchronized extends ExpectMsg {
-  onEnter() {
-    applyPeripheralSynchronized(this.getState(), false)
-    sendStateChangeToCentral()
-    Toast.show({ text: i18n('unsynchronized') })
-  }
-  onCentralStateCreated(st: State) {
-    this.setState(st)
-    applyPeripheralSynchronized(this.getState(), true)
-    sendStateChangeToCentral()
-    this.transitionTo(new SynchronizeVariant)
-  }
+class RoundOngoing extends Round {
   onCentralStateChanged() {
-    applyPeripheralSynchronized(this.getState(), true)
-    sendStateChangeToCentral()
-    this.transitionTo(new SynchronizeFen)
-  }
-  onPeripheralCommand(cmd: string) {
-    if (cmd.startsWith('fen')) {
-      const peripheralFen = getCommandParams(cmd)
-      const centralFen = createFullFen(this.getState())
-      applyPeripheralPieces(this.getState(), peripheralFen)
-      if (areFensSame(peripheralFen, centralFen)) {
-        sendCommandToPeripheral('ok')
-        applyPeripheralSynchronized(this.getState(), true)
-        sendStateChangeToCentral()
-        this.transitionTo(new SynchronizeLastMove)
-      }
-      else {
-        sendCommandToPeripheral('nok')
-        sendStateChangeToCentral()
-      }
+    const state = this.getState()
+    sendCommandToPeripheral(`${Command.Move} ${lastMoveToUci(state)}`)
+    if (this.getFeatures().check.isSupported && state.check) {
+      sendCommandToPeripheral(`${Command.Check} ${state.check}`)
     }
-    else super.onPeripheralCommand(cmd)
-  }
-}
-
-class Synchronized extends ExpectMsg {
-  onCentralStateCreated(st: State) {
-    this.setState(st)
-    this.transitionTo(new SynchronizeVariant)
-  }
-  onCentralStateChanged() {
-    applyPeripheralMoveRejected(this.getState(), false)
+    applyPeripheralMoveRejected(state, false)
     sendStateChangeToCentral()
-    sendCommandToPeripheral(`move ${lastMoveToUci(this.getState())}`)
-    this.transitionTo(new SynchronizeCentralMove)
   }
   onPeripheralCommand(cmd: string) {
-    if (cmd.startsWith('move')) {
+    if (cmd.startsWith(Command.Move)) {
+      const state = this.getState()
       const move = getCommandParams(cmd)
-      applyPeripheralMoveRejected(this.getState(), false)
-      applyPeripheralLastMove(this.getState(), move)
-      this.transitionTo(isUciWithPromotion(move) ?
-        new SynchronizePeripheralPromotedMove :
-        new SynchronizePeripheralMove)
+      applyPeripheralMoveRejected(state, false)
+      applyPeripheralLastMove(state, move)
+      this.transitionTo(new CheckPeripheralMove)
       sendMoveToCentral(move)
     }
-    else if (cmd.startsWith('fen')) {
-      const peripheralFen = getCommandParams(cmd)
-      const centralFen = createFullFen(this.getState())
-      applyPeripheralMoveRejected(this.getState(), false)
-      applyPeripheralPieces(this.getState(), peripheralFen)
-      if (areFensSame(peripheralFen, centralFen)) {
-        sendCommandToPeripheral('ok')
-      }
-      else {
-        sendCommandToPeripheral('nok')
-        this.transitionTo(new Unsynchronized)
-      }
-    }
     else super.onPeripheralCommand(cmd)
   }
 }
 
-class SynchronizeCentralMove extends BleChessState {
-  onPeripheralCommand(cmd: string) {
-    if (cmd === 'ok') {
-      this.transitionTo(new Synchronized)
-    }
-    else super.onPeripheralCommand(cmd)
-  }
-}
-
-class SynchronizePeripheralMove extends BleChessState {
+class CheckPeripheralMove extends Round {
   onCentralStateChanged() {
-    if (this.getState().lastPromotion) {
-      this.transitionTo(new Promote)
+    const state = this.getState()
+    this.transitionTo(new RoundOngoing)
+    if (state.lastPromotion && !state.peripheral.lastPromotion) {
+      sendCommandToPeripheral(`${Command.Promote} ${lastMoveToUci(state)}`)
     }
     else {
-      sendCommandToPeripheral('ok')
-      this.transitionTo(new Synchronized)
+      sendCommandToPeripheral(Command.Ok)
+    }
+    if (this.getFeatures().check.isSupported && state.check) {
+      sendCommandToPeripheral(`${Command.Check} ${state.check}`)
     }
   }
   onMoveRejectedByCentral() {
-    sendCommandToPeripheral('nok')
-    this.transitionTo(new Synchronized)
-    applyPeripheralMoveRejected(this.getState(), true)
-    sendStateChangeToCentral()
-    Toast.show({ text: i18n('rejected') })
-  }
-}
-
-class Promote extends BleChessState {
-  onEnter() {
-    sendCommandToPeripheral(`promote ${lastMoveToUci(this.getState())}`)
-  }
-  onPeripheralCommand(cmd: string) {
-    if (cmd === 'ok') {
-      this.transitionTo(new Synchronized)
-    }
-    else super.onPeripheralCommand(cmd)
-  }
-}
-
-class SynchronizePeripheralPromotedMove extends BleChessState {
-  onCentralStateChanged() {
-    sendCommandToPeripheral('ok')
-    this.transitionTo(new Synchronized)
-  }
-  onMoveRejectedByCentral() {
-    sendCommandToPeripheral('nok')
-    this.transitionTo(new Synchronized)
-    applyPeripheralMoveRejected(this.getState(), true)
+    const state = this.getState()
+    this.transitionTo(new RoundOngoing)
+    sendCommandToPeripheral(Command.Nok)
+    applyPeripheralMoveRejected(state, true)
     sendStateChangeToCentral()
     Toast.show({ text: i18n('rejected') })
   }

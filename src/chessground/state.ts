@@ -85,6 +85,8 @@ export interface State {
   peripheral: {
     isMoveRejected: boolean,
     lastMove: KeyPair | null
+    lastPromotion: Role | null
+    isVariantSupported: boolean,
     isSynchronized: boolean,
     pieces: cg.PeripheralPieces
   }
@@ -162,6 +164,8 @@ export function makeDefaults(): State {
     peripheral: {
       isMoveRejected: false,
       lastMove: null,
+      lastPromotion: null,
+      isVariantSupported: false,
       isSynchronized: true,
       pieces: new Map()
     }

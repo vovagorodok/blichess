@@ -1,4 +1,5 @@
 import { State } from './chessground/state'
+import { GameStatus } from './lichess/interfaces/game'
 import bluetooth from './externalDevice/bluetooth'
 
 type MoveCallback = (orig: Key, dest: Key, prom?: Role) => void
@@ -17,6 +18,9 @@ export default {
     }
     bluetooth.protocol().onCentralStateChanged()
     bluetooth.saveLastMove()
+  },
+  onCentralStateEnded(status?: GameStatus) {
+    bluetooth.protocol().onCentralStateEnded(status)
   },
   onMoveRejectedByCentral() {
     bluetooth.protocol().onMoveRejectedByCentral()

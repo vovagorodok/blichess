@@ -25,7 +25,14 @@ export function applyPeripheralMoveRejected(st: State, isRejected: boolean) {
 }
 
 export function applyPeripheralLastMove(st: State, uci: string) {
-  st.peripheral.lastMove = chessFormat.uciToMove(uci)
+  const move = chessFormat.uciToMove(uci)
+  const prom = chessFormat.uciToProm(uci)
+  st.peripheral.lastMove = move
+  st.peripheral.lastPromotion = prom || null
+}
+
+export function applyVariantSupported(st: State, isVariantSupported: boolean) {
+  st.peripheral.isVariantSupported = isVariantSupported
 }
 
 export function applyPeripheralSynchronized(st: State, isSynchronized: boolean) {
@@ -65,25 +72,12 @@ export function isUciWithPromotion(uci: string): boolean {
   return chessFormat.uciToProm(uci) !== undefined
 }
 
-export function areFenCharsSame(lchar: string, rchar: string): boolean {
-  return lchar === rchar ||
-        (lchar === '?' && 'prbnkqPRBNKQ'.includes(rchar)) ||
-        (rchar === '?' && 'prbnkqPRBNKQ'.includes(lchar)) ||
-        (lchar === 'w' && 'PRBNKQ'.includes(rchar)) ||
-        (rchar === 'w' && 'PRBNKQ'.includes(lchar)) ||
-        (lchar === 'b' && 'prbnkq'.includes(rchar)) ||
-        (rchar === 'b' && 'prbnkq'.includes(lchar))
-}
-
-export function areFensSame(lfen: string, rfen: string): boolean {
-  const minLength = Math.min(lfen.length, rfen.length)
-  for (var i = 0; i < minLength; i++) {
-    if (!areFenCharsSame(lfen[i], rfen[i]))
-      return false
-  }
-  return true
-}
-
 export function delay(milliseconds : number) {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
+export function* createValuesIterator<T extends object>(instance: T): Generator<T[keyof T]> {
+  for (const key of Object.keys(instance) as (keyof T)[]) {
+    yield instance[key];
+  }
 }

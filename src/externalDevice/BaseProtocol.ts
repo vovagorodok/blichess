@@ -1,4 +1,5 @@
 import { State } from '../chessground/state'
+import { GameStatus } from '../lichess/interfaces/game'
 
 export class BaseProtocol {
   private state?: BaseState
@@ -17,6 +18,9 @@ export class BaseProtocol {
   }
   onCentralStateChanged() {
     this.state?.onCentralStateChanged()
+  }
+  onCentralStateEnded(status?: GameStatus) {
+    this.state?.onCentralStateEnded(status)
   }
   onMoveRejectedByCentral() {
     this.state?.onMoveRejectedByCentral()
@@ -38,5 +42,6 @@ export class BaseState {
   onPeripheralCommand(_cmd: string) {}
   onCentralStateCreated(_st: State) {}
   onCentralStateChanged() {}
+  onCentralStateEnded(_status?: GameStatus) {}
   onMoveRejectedByCentral() {}
 }

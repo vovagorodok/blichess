@@ -276,11 +276,11 @@ function computeSquareClasses(d: State): Map<Key, string> {
     if (d.check && d.highlight.check) {
       addSquare(squares, d.check, 'check')
     }
-    if (d.peripheral.isMoveRejected && d.peripheral.lastMove) {
+    if (d.peripheral.isVariantSupported && d.peripheral.isMoveRejected && d.peripheral.lastMove) {
       addSquare(squares, d.peripheral.lastMove[0], 'rejected-move')
       addSquare(squares, d.peripheral.lastMove[1], 'rejected-move')
     }
-  } else {
+  } else if (d.peripheral.isVariantSupported) {
     for (const [key, centralPiece] of centralPieces) {
       const peripheralPiece = peripheralPieces.get(key)
       if (!peripheralPiece) {
