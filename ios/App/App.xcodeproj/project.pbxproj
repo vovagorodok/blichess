@@ -134,7 +134,7 @@
 			);
 			dependencies = (
 			);
-			name = blichess;
+			name = Blichess;
 			productName = App;
 			productReference = 504EC3041FED79650016851F /* lichess.app */;
 			productType = "com.apple.product-type.application";

@@ -3,11 +3,11 @@ import { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
   appId: 'com.vovagorodok.blichess',
-  appName: 'blichess',
+  appName: 'Blichess',
   bundledWebRuntime: false,
   webDir: 'www',
   backgroundColor: '000000ff',
-  appendUserAgent: 'Lichobile/8.0.0+ble2.0.4',
+  appendUserAgent: 'Lichobile/8.0.0+ble2.0.5',
   plugins: {
     SplashScreen: {
       androidSplashResourceName: 'launch_splash',
