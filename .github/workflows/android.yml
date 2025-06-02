@@ -16,18 +16,30 @@ jobs:
     name: Generate debug APK
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/build-lichobile-apk
+        with:
+          artifactName: "debugApk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "debugApk"
+          path: |
+            ./android/app/build/outputs/apk/debug/
 
   freeApk:
     name: Generate free debug APK
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/build-lichobile-apk
         with:
           artifactName: "debugFreeApk"
           patchNonFree: "true"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "debugFreeApk"
+          path: |
+            ./android/app/build/outputs/apk/debug/
       - name: Check non-free dependencies
         working-directory: ./android/app/build/outputs/apk/debug/
         run: |
