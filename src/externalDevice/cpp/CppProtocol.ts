@@ -1,26 +1,33 @@
-import { BaseProtocol, BaseState } from './BaseProtocol'
-import { isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, sendStateChangeToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyVariantSupported, applyPeripheralSynchronized, applyPeripheralPieces, createValuesIterator } from './utils'
-import { State, makeDefaults } from '../chessground/state'
-import { GameStatus } from '../lichess/interfaces/game'
+import { BaseProtocol, BaseState } from '../BaseProtocol'
+import { isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, sendStateChangeToCentral, sendOptionsUpdateToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyVariantSupported, applyPeripheralSynchronized, applyPeripheralPieces, createValuesIterator } from '../utils/utils'
+import { Command, EndReason, Side } from './CppConstants'
+import { Support } from '../utils/Support'
+import { CppFeatures, CppWrappedFeatures } from './CppFeatures'
+import { CppVariants, CppWrappedVariants } from './CppVariants'
+import { CppOptions } from './CppOptions'
+import { State, makeDefaults } from '../../chessground/state'
+import { GameStatus } from '../../lichess/interfaces/game'
 import { Toast } from '@capacitor/toast'
-import i18n from '../i18n'
+import i18n from '../../i18n'
 
 export class CppProtocol extends BaseProtocol {
-  roundState = makeDefaults()
-  features = new Features
-  variants = new Variants
-  variantsMap = {
-    standard: this.variants.standard,
-    chess960: this.variants.chess960,
-    antichess: this.variants.antiChess,
-    kingOfTheHill: this.variants.kingOfTheHill,
-    threeCheck: this.variants.threeCheck,
-    atomic: this.variants.atomic,
-    horde: this.variants.horde,
-    racingKings: this.variants.racingKings,
-    crazyhouse: this.variants.crazyHouse,
+  _roundState = makeDefaults()
+  _features = new CppFeatures
+  _wrappedFeatures = new CppWrappedFeatures(this._features)
+  _variants = new CppVariants
+  _wrappedVariants = new CppWrappedVariants(this._variants)
+  _variantsMap = {
+    standard: this._variants.standard,
+    chess960: this._variants.chess960,
+    antichess: this._variants.antiChess,
+    kingOfTheHill: this._variants.kingOfTheHill,
+    threeCheck: this._variants.threeCheck,
+    atomic: this._variants.atomic,
+    horde: this._variants.horde,
+    racingKings: this._variants.racingKings,
+    crazyhouse: this._variants.crazyHouse,
   }
-  endReasonsMap = {
+  _endReasonsMap = {
     mate: EndReason.Checkmate,
     stalemate: EndReason.Draw,
     draw: EndReason.Draw,
@@ -33,117 +40,51 @@ export class CppProtocol extends BaseProtocol {
     cheat: EndReason.Undefined,
     variantEnd: EndReason.Undefined,
   }
+  _options = new CppOptions
 
   init(st: State) {
-    this.roundState = st
+    this._roundState = st
     this.transitionTo(new Init)
   }
-}
 
-enum Feature {
-  LastMove = 'last_move',
-  Check = 'check',
-  Msg = 'msg',
-  Side = 'side',
-}
-
-enum Variant {
-  Standard = "standard",
-  Chess960 = "chess_960",
-  ThreeCheck = "3_check",
-  Atomic = "atomic",
-  KingOfTheHill = "king_of_the_hill",
-  AntiChess = "anti_chess",
-  Horde = "horde",
-  RacingKings = "racing_kings",
-  CrazyHouse = "crazy_house",
-}
-
-enum Command {
-  Ok = 'ok',
-  Nok = 'nok',
-  Feature = 'feature',
-  Variant = 'variant',
-  SetVariant = 'set_variant',
-  Begin = 'begin',
-  State = 'state',
-  Sync = 'sync',
-  Unsync = 'unsync',
-  End = 'end',
-  Move = 'move',
-  Promote = 'promote',
-  Err = 'err',
-  LastMove = 'last_move',
-  Check = 'check',
-  Msg = 'msg',
-  Side = 'side',
-}
-
-enum EndReason {
-  Undefined = 'undefined',
-  Checkmate = 'checkmate',
-  Draw = 'draw',
-  Timeout = 'timeout',
-  Resign = 'resign',
-  Abort = 'abort',
-}
-
-enum Side {
-  White = 'w',
-  Black = 'b',
-  Both = '?'
-}
-
-class Support {
-  name: string
-  isSupported: boolean
-
-  constructor(name: string) {
-    this.name = name
-    this.isSupported = false
+  features() {
+    return this._wrappedFeatures
   }
-}
-
-class Features {
-  lastMove = new Support(Feature.LastMove)
-  check = new Support(Feature.Check)
-  msg = new Support(Feature.Msg)
-  side = new Support(Feature.Side)
-}
-
-class Variants {
-  standard = new Support(Variant.Standard)
-  chess960 = new Support(Variant.Chess960)
-  threeCheck = new Support(Variant.ThreeCheck)
-  atomic = new Support(Variant.Atomic)
-  kingOfTheHill = new Support(Variant.KingOfTheHill)
-  antiChess = new Support(Variant.AntiChess)
-  horde = new Support(Variant.Horde)
-  racingKings = new Support(Variant.RacingKings)
-  crazyHouse = new Support(Variant.CrazyHouse)
+  variants() {
+    return this._wrappedVariants
+  }
+  options() {
+    return this._options.iterator
+  }
 }
 
 abstract class BleChessState extends BaseState {
   setState(state: State) {
-    this.context.roundState = state
+    this.context._roundState = state
   }
   getState(): State {
-    return this.context.roundState
-  }
-  getFeatures(): Features {
-    return this.context.features
+    return this.context._roundState
   }
 
-  getVariants(): Variants {
-    return this.context.variants
+  getFeatures(): CppFeatures {
+    return this.context._features
   }
+
+  getVariants(): CppVariants {
+    return this.context._variants
+  }
+
+  getOptions(): CppOptions {
+    return this.context._options
+  }
+
 
   getVariant(variant: VariantKey): Support {
-    return this.context.variantsMap[variant] || this.context.variants.standard
+    return this.context._variantsMap[variant] || this.context._variants.standard
   }
 
   getEndReason(status?: GameStatus): EndReason | undefined {
-    return status?.name && this.context.endReasonsMap[status.name]
+    return status?.name && this.context._endReasonsMap[status.name]
   }
 
   onPeripheralCommand(cmd: string) {
@@ -153,12 +94,26 @@ abstract class BleChessState extends BaseState {
     else if (cmd.startsWith(Command.Err)) {
       Toast.show({ text: getCommandParams(cmd) })
     }
+    else if (cmd.startsWith(Command.SetOption)) {
+      if (!this.getOptions().set(getCommandParams(cmd))) {
+        Toast.show({ text: `${i18n('unexpected')}: ${cmd}` })
+      }
+      sendOptionsUpdateToCentral()
+    }
+    else if (cmd.startsWith(Command.OptionsReset)) {
+      this.getOptions().reset()
+      sendOptionsUpdateToCentral()
+    }
     else {
       Toast.show({ text: `${i18n('unexpected')}: ${this.constructor.name}: ${cmd}` })
     }
   }
   onCentralStateCreated(st: State) {
     this.setState(st)
+  }
+  onCentralOptionsReset() {
+    this.getOptions().reset()
+    sendCommandToPeripheral(Command.OptionsReset)
   }
 }
 
@@ -167,7 +122,7 @@ class Init extends BleChessState {
     const checkVariants = new CheckSupportsIteration(
       createValuesIterator(this.getVariants()),
       Command.Variant,
-      new Initialized)
+      new CheckOptions)
     const checkFeatures = new CheckSupportsIteration(
       createValuesIterator(this.getFeatures()),
       Command.Feature,
@@ -212,6 +167,33 @@ class CheckSupportsIteration extends BleChessState {
     else {
       sendCommandToPeripheral(`${this.command} ${this.current.value.name}`)
     }
+  }
+}
+
+class CheckOptions extends BleChessState {
+  onEnter() {
+    if (!this.getFeatures().option.isSupported) {
+      this.transitionTo(new Initialized)
+      return
+    }
+    sendCommandToPeripheral(Command.OptionsBegin)
+  }
+  onPeripheralCommand(cmd: string) {
+    if (cmd.startsWith(Command.OptionsEnd)) {
+      this.transitionTo(new Initialized)
+      sendOptionsUpdateToCentral()
+    }
+    else if (cmd.startsWith(Command.Option)) {
+      if (!this.getOptions().add(getCommandParams(cmd))) {
+        Toast.show({ text: `${i18n('unexpected')}: ${cmd}` })
+      }
+    }
+    else if (cmd.startsWith(Command.SetOption)) {
+      if (!this.getOptions().set(getCommandParams(cmd))) {
+        Toast.show({ text: `${i18n('unexpected')}: ${cmd}` })
+      }
+    }
+    else super.onPeripheralCommand(cmd)
   }
 }
 

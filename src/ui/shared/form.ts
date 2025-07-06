@@ -71,6 +71,61 @@ export default {
     ]
   },
 
+  renderSelectOption(
+    label: string,
+    name: string,
+    options: ReadonlyArray<SelectOption>,
+    settingsProp: Prop<string>,
+    isDisabled?: boolean,
+    onChangeCallback?: (v: string) => void
+  ) {
+    const prop = settingsProp()
+    return h('div.check_container', {
+      className: isDisabled ? 'disabled' : ''
+    }, [
+      h('label', {
+        'for': 'select_' + name
+      }, i18n(label)),
+      h('select', {
+        id: 'select_' + name,
+        disabled: isDisabled,
+        onchange(e: Event) {
+          const val = (e.target as HTMLSelectElement).value
+          settingsProp(val)
+          if (onChangeCallback) onChangeCallback(val)
+          setTimeout(redraw, 10)
+        }
+      }, options.map(e => renderOption(e[0], e[1], prop, e[2], e[3])))
+    ])
+  },
+
+  renderTextEditOption(
+    label: string,
+    name: string,
+    prop: Prop<string>,
+    onChangeCallback: (v: string) => void,
+    isDisabled?: boolean,
+  ) {
+    const value = prop()
+    return h('div.check_container', {
+      className: isDisabled ? 'disabled' : ''
+    }, [
+      h('label', { 'for': 'textedit_' + name }, label),
+      h('button', {
+        type: 'button',
+        disabled: isDisabled,
+        onclick() {
+          const newValue = prompt(label, value)
+          if (newValue !== null && newValue !== value) {
+            prop(newValue)
+            onChangeCallback(newValue)
+            setTimeout(redraw, 10)
+          }
+        }
+      }, value)
+    ])
+  },
+
   renderCheckbox(
     label: Mithril.Children,
     name: string,
@@ -122,6 +177,40 @@ export default {
           })
         }, l)
       }))
+    ])
+  },
+
+  renderSliderOption(
+    label: string,
+    name: string,
+    min: number,
+    max: number,
+    step: number,
+    prop: Prop<number>,
+    onChange?: (v: number) => void,
+    disabled?: boolean,
+  ) {
+    const value = prop()
+    return h('div.forms-rangeSlider', {
+      className: disabled ? 'disabled' : ''
+    }, [
+      h('label', { 'for': name }, label),
+      h('input[type=range]', {
+        id: name,
+        value,
+        disabled,
+        min,
+        max,
+        step,
+        oninput(e: Event) {
+          const val = (e.target as HTMLInputElement).value
+          const nval = ~~val
+          prop(nval)
+          if (onChange) onChange(nval)
+          setTimeout(redraw, 10)
+        }
+      }),
+      h('div.forms-sliderValue', value)
     ])
   },
 

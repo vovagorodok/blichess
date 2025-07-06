@@ -1,8 +1,8 @@
-import * as chessFormat from '../utils/chessFormat'
-import { State } from '../chessground/state'
-import fen from '../chessground/fen'
-import bluetooth from './bluetooth'
-import external from '../externalDevice'
+import * as chessFormat from '../../utils/chessFormat'
+import { State } from '../../chessground/state'
+import fen from '../../chessground/fen'
+import bluetooth from '../bluetooth'
+import external from '../../externalDevice'
 
 export function isCentralStateCreated(st: State): boolean {
   return st.pieces.size !== 0
@@ -62,6 +62,10 @@ export function sendMoveToCentral(uci: string) {
 
 export function sendStateChangeToCentral() {
   external.sendStateChangeToCentral()
+}
+
+export function sendOptionsUpdateToCentral() {
+  external.sendOptionsUpdateToCentral()
 }
 
 export function getCommandParams(cmd: string): string {

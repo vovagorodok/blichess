@@ -444,6 +444,8 @@ const untranslated: StringMap = {
   localEvalCaution: 'Caution: intensive usage will drain battery.',
   incorrectThreefoldClaim: 'Incorrect threefold repetition claim.',
   useBluetoothDevice: 'Use bluetooth device',
+  resetToDefault: 'Reset to default',
+  deviceOptions: 'Device options',
   vibrateOnGameEvents: 'Vibrate on game events',
   offline: 'Offline'
 }

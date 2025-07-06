@@ -1,7 +1,9 @@
+import { Protocol } from './Protocol'
 import { State } from '../chessground/state'
 import { GameStatus } from '../lichess/interfaces/game'
+import { dummyProtocol } from './dummy/DummyProtocol'
 
-export class BaseProtocol {
+export class BaseProtocol implements Protocol {
   private state?: BaseState
 
   transitionTo(state: BaseState) {
@@ -9,6 +11,11 @@ export class BaseProtocol {
     this.state.setContext(this)
     this.state.onEnter()
   }
+
+  init(_st: State) {}
+  features() { return dummyProtocol.features() }
+  variants() { return dummyProtocol.variants() }
+  options() { return dummyProtocol.options() }
 
   onPeripheralCommand(cmd: string) {
     this.state?.onPeripheralCommand(cmd)
@@ -27,6 +34,9 @@ export class BaseProtocol {
   }
   onMoveRejectedByCentral() {
     this.state?.onMoveRejectedByCentral()
+  }
+  onCentralOptionsReset() {
+    this.state?.onCentralOptionsReset()
   }
 }
 const dummyBaseProtocol = new BaseProtocol
@@ -48,4 +58,6 @@ export class BaseState {
   onCentralStateCanceled() {}
   onCentralStateEnded(_status?: GameStatus) {}
   onMoveRejectedByCentral() {}
+
+  onCentralOptionsReset() {}
 }

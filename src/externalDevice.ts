@@ -34,6 +34,9 @@ export default {
   sendStateChangeToCentral() {
     onPeripheralStateChange?.()
   },
+  sendOptionsUpdateToCentral() {
+    bluetooth.updateSettings()
+  },
   subscribe(moveCallback: MoveCallback, stateChangeCallback: StateChangeCallback) {
     onPeripheralMove = moveCallback
     onPeripheralStateChange = stateChangeCallback

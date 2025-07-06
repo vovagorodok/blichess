@@ -4,8 +4,9 @@ import redraw from '../utils/redraw'
 import i18n from '../i18n'
 import { State, makeDefaults } from '../chessground/state'
 import { Toast } from '@capacitor/toast'
-import { CppProtocol } from './CppProtocol'
-import { dummyProtocol } from './DummyProtocol'
+import { Protocol } from './Protocol'
+import { CppProtocol } from './cpp/CppProtocol'
+import { dummyProtocol } from './dummy/DummyProtocol'
 
 interface ChessServiceUUIDs {
   readonly srv: string
@@ -26,7 +27,7 @@ const SUPPOTRED_SERVICES: ChessService[] = [
 
 class BluetoothConnection {
   isConnected: boolean = false
-  protocol: any = dummyProtocol
+  protocol: Protocol = dummyProtocol
   centralState: State = makeDefaults()
   lastMove: KeyPair | null = null
   private uuids?: ChessServiceUUIDs
@@ -41,6 +42,7 @@ class BluetoothConnection {
     this.isConnected = false
     this.protocol = dummyProtocol
     Toast.show({ text: i18n('disconnectedFromBluetoothDevice') })
+    redraw()
     if (settings.general.bluetooth.useDevice())
       this.connect()
   }
@@ -113,6 +115,15 @@ export default {
   sendCommandToPeripheral(cmd: string) {
     bluetoothConnection.sendCommandToPeripheral(cmd)
   },
+  features() {
+    return bluetoothConnection.protocol.features()
+  },
+  variants() {
+    return bluetoothConnection.protocol.variants()
+  },
+  options() {
+    return bluetoothConnection.protocol.options()
+  },
   init() {
     if (settings.general.bluetooth.useDevice()) {
       BleClient.initialize({ androidNeverForLocation: true })
@@ -135,5 +146,8 @@ export default {
     else {
       bluetoothConnection.disconnect()
     }
+  },
+  updateSettings() {
+    redraw()
   }
 }
