@@ -9,10 +9,8 @@ import bluetooth from '../../externalDevice/bluetooth'
 import { OptionType, BoolOption, EnumOption, FloatOption, IntOption, StrOption } from '../../externalDevice/Option'
 
 function convertToReadable(str: string): string {
-  return str
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  const s = str.replace(/_/g, ' ');
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function renderBody() {
@@ -28,6 +26,11 @@ function renderBody() {
   ]
 
   if (bluetooth.features().option) {
+    items.push(
+      h('li.list_item', { 
+        style: { textAlign: 'center', fontWeight: 'bold' }
+      }, i18n('deviceOptions'))
+    )
     items.push(
       h('li.list_item.refresh', {
         oncreate: helper.ontapY(() => bluetooth.protocol().onCentralOptionsReset())
