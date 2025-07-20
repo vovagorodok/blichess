@@ -3,8 +3,8 @@ export enum Feature {
   Check = 'check',
   Msg = 'msg',
   Side = 'side',
-  Option = 'option',
   SetState = 'set_state',
+  Option = 'option',
 }
 
 export enum Variant {
