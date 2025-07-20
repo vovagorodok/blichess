@@ -249,23 +249,27 @@ class Round extends Idle {
     }
     else if (cmd.startsWith(Command.UnsyncSetible)) {
       const state = this.getState()
+      const wasSynchronized = state.peripheral.isSynchronized
       const peripheralFen = getCommandParams(cmd)
       applyPeripheralPieces(state, peripheralFen)
       applyPeripheralSynchronized(state, false)
       applyPeripheralSetible(state, true)
       applyPeripheralMoveRejected(state, false)
       sendStateChangeToCentral()
-      Toast.show({ text: i18n('unsynchronized') })
+      if (wasSynchronized)
+        Toast.show({ text: i18n('unsynchronized') })
     }
     else if (cmd.startsWith(Command.Unsync)) {
       const state = this.getState()
+      const wasSynchronized = state.peripheral.isSynchronized
       const peripheralFen = getCommandParams(cmd)
       applyPeripheralPieces(state, peripheralFen)
       applyPeripheralSynchronized(state, false)
       applyPeripheralSetible(state, false)
       applyPeripheralMoveRejected(state, false)
       sendStateChangeToCentral()
-      Toast.show({ text: i18n('unsynchronized') })
+      if (wasSynchronized)
+        Toast.show({ text: i18n('unsynchronized') })
     }
     else super.onPeripheralCommand(cmd)
   }
