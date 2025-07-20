@@ -1,6 +1,7 @@
 import { State } from './chessground/state'
 import { GameStatus } from './lichess/interfaces/game'
 import bluetooth from './externalDevice/bluetooth'
+import redraw from './utils/redraw'
 
 type MoveCallback = (orig: Key, dest: Key, prom?: Role) => void
 type StateChangeCallback = () => void
@@ -28,14 +29,28 @@ export default {
   onMoveRejectedByCentral() {
     bluetooth.protocol().onMoveRejectedByCentral()
   },
+  onCentralSetState() {
+    bluetooth.protocol().onCentralSetState()
+  },
   sendMoveToCentral(orig: Key, dest: Key, prom?: Role) {
     onPeripheralMove?.(orig, dest, prom)
   },
   sendStateChangeToCentral() {
     onPeripheralStateChange?.()
+    if (this.features().setState)
+      redraw()
   },
   sendOptionsUpdateToCentral() {
     bluetooth.updateSettings()
+  },
+  features() {
+    return bluetooth.features()
+  },
+  variants() {
+    return bluetooth.variants()
+  },
+  options() {
+    return bluetooth.options()
   },
   subscribe(moveCallback: MoveCallback, stateChangeCallback: StateChangeCallback) {
     onPeripheralMove = moveCallback

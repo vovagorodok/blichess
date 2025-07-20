@@ -13,6 +13,7 @@ import * as helper from '../../../helper'
 import * as tournamentXhr from '../../../tournament/tournamentXhr'
 import { getPGN } from '../roundXhr'
 import OnlineRound from '../OnlineRound'
+import externalDevice from '../../../../externalDevice'
 
 export default {
   standard(ctrl: OnlineRound, condition: (data: OnlineGameData) => boolean, icon: string, hint: string, socketMsg: string, onTap?: () => void) {
@@ -288,6 +289,20 @@ export default {
       <button className={className}
         oncreate={helper.ontap(ctrl.jumpFirst)} />
     )
+  },
+  autocomplete(ctrl: OnlineRound) {
+    const peripheral = ctrl.chessground.state.peripheral
+    const enabled = !peripheral.isSynchronized && peripheral.isSetible
+    const className = helper.classSet({
+      'action_bar_button': true,
+      'fa': true,
+      'fa-magic': true,
+      disabled: !enabled
+    })
+    return externalDevice.features().setState ? (
+      <button className={className}
+        oncreate={helper.ontap(externalDevice.onCentralSetState)} />
+    ) : null
   },
   backward(ctrl: OnlineRound) {
     const prevPly = ctrl.vm.ply - 1

@@ -35,6 +35,9 @@ export class BaseProtocol implements Protocol {
   onMoveRejectedByCentral() {
     this.state?.onMoveRejectedByCentral()
   }
+  onCentralSetState() {
+    this.state?.onCentralSetState()
+  }
   onCentralOptionsReset() {
     this.state?.onCentralOptionsReset()
   }
@@ -59,5 +62,6 @@ export class BaseState {
   onCentralStateEnded(_status?: GameStatus) {}
   onMoveRejectedByCentral() {}
 
+  onCentralSetState() {}
   onCentralOptionsReset() {}
 }

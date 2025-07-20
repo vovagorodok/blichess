@@ -13,6 +13,7 @@ import settings from '../../../settings'
 import Replay from './Replay'
 import { IChessClock, IStageClock } from '../clock/interfaces'
 import { autoScroll, autoScrollInline, onReplayTap, getMoveEl } from '../round/util'
+import externalDevice from '../../../externalDevice'
 
 function getChecksCount(ctrl: OfflineRoundInterface, color: Color) {
   const sit = ctrl.replay?.situation()
@@ -97,6 +98,7 @@ export function renderGameActionsBar(ctrl: OfflineRoundInterface) {
       <button className="action_bar_button" data-icon="A"
         oncreate={helper.ontap(ctrl.goToAnalysis)}
       />
+      {renderAutocompleteButton(ctrl)}
       {renderBackwardButton(ctrl)}
       {renderForwardButton(ctrl)}
     </section>
@@ -160,6 +162,15 @@ export function renderInlineReplay(ctrl: OfflineRoundInterface) {
   }, renderMoves(ctrl.replay))
 }
 
+export function renderAutocompleteButton(ctrl: OfflineRoundInterface) {
+  const peripheral = ctrl.chessground.state.peripheral
+  return externalDevice.features().setState ? h('button.action_bar_button.fa.fa-magic', {
+    oncreate: helper.ontap(externalDevice.onCentralSetState),
+    className: helper.classSet({
+      disabled: !(!peripheral.isSynchronized && peripheral.isSetible),
+    })
+  }) : null
+}
 
 export function renderBackwardButton(ctrl: OfflineRoundInterface) {
   return ctrl.replay ? h('button.action_bar_button.fa.fa-chevron-left', {

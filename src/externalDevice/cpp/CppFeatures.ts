@@ -7,6 +7,7 @@ export class CppFeatures {
   check = new Support(Feature.Check)
   msg = new Support(Feature.Msg)
   side = new Support(Feature.Side)
+  setState = new Support(Feature.SetState)
   option = new Support(Feature.Option)
 }
 
@@ -17,6 +18,9 @@ export class CppWrappedFeatures implements Features {
     this._features = features
   }
 
+  get setState() {
+    return this._features.setState.isSupported
+  }
   get option() {
     return this._features.option.isSupported
   }

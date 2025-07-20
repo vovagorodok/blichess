@@ -1,5 +1,5 @@
 import { BaseProtocol, BaseState } from '../BaseProtocol'
-import { isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, sendStateChangeToCentral, sendOptionsUpdateToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyVariantSupported, applyPeripheralSynchronized, applyPeripheralPieces, createValuesIterator } from '../utils/utils'
+import { isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, sendStateChangeToCentral, sendOptionsUpdateToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyVariantSupported, applyPeripheralSynchronized, applyPeripheralSetible, applyPeripheralPieces, createValuesIterator } from '../utils/utils'
 import { Command, EndReason, Side } from './CppConstants'
 import { Support } from '../utils/Support'
 import { CppFeatures, CppWrappedFeatures } from './CppFeatures'
@@ -224,6 +224,11 @@ class Round extends Idle {
       sendCommandToPeripheral(`${Command.End} ${reason}`)
     }
   }
+  onCentralSetState() {
+    sendCommandToPeripheral(`${Command.SetState}`)
+    applyPeripheralSetible(this.getState(), false)
+    sendStateChangeToCentral()
+  }
   onPeripheralCommand(cmd: string) {
     if (cmd.startsWith(Command.State)) {
       const state = this.getState()
@@ -237,15 +242,27 @@ class Round extends Idle {
       const peripheralFen = getCommandParams(cmd)
       applyPeripheralPieces(state, peripheralFen)
       applyPeripheralSynchronized(state, true)
+      applyPeripheralSetible(state, false)
       applyPeripheralMoveRejected(state, false)
       sendStateChangeToCentral()
       Toast.show({ text: i18n('synchronized') })
+    }
+    else if (cmd.startsWith(Command.UnsyncSetible)) {
+      const state = this.getState()
+      const peripheralFen = getCommandParams(cmd)
+      applyPeripheralPieces(state, peripheralFen)
+      applyPeripheralSynchronized(state, false)
+      applyPeripheralSetible(state, true)
+      applyPeripheralMoveRejected(state, false)
+      sendStateChangeToCentral()
+      Toast.show({ text: i18n('unsynchronized') })
     }
     else if (cmd.startsWith(Command.Unsync)) {
       const state = this.getState()
       const peripheralFen = getCommandParams(cmd)
       applyPeripheralPieces(state, peripheralFen)
       applyPeripheralSynchronized(state, false)
+      applyPeripheralSetible(state, false)
       applyPeripheralMoveRejected(state, false)
       sendStateChangeToCentral()
       Toast.show({ text: i18n('unsynchronized') })

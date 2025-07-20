@@ -606,6 +606,7 @@ function renderGameActionsBar(ctrl: OnlineRound) {
       {gameApi.forecastable(ctrl.data) ? renderAnalysisIcon(ctrl) : null}
       {gameButton.flipBoard(ctrl)}
       {gameApi.playable(ctrl.data) ? null : gameButton.analysisBoardIconOnly(ctrl)}
+      {gameButton.autocomplete(ctrl)}
       {gameButton.backward(ctrl)}
       {gameButton.forward(ctrl)}
     </section>
