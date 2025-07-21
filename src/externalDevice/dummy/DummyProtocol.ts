@@ -19,6 +19,7 @@ export class DummyProtocol implements Protocol {
   onCentralStateEnded() {}
   onMoveRejectedByCentral() {}
 
+  onCentralSetState() {}
   onCentralOptionsReset() {}
 }
 export const dummyProtocol = new DummyProtocol

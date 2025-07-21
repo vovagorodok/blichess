@@ -7,6 +7,7 @@ import {
   renderAntagonist,
   renderReplay,
   renderInlineReplay,
+  renderAutocompleteButton,
   renderBackwardButton,
   renderForwardButton,
 } from '../shared/offlineRound/view'
@@ -107,6 +108,7 @@ function renderGameActionsBar(ctrl: OtbRound) {
           )}
         /> : null
       }
+      {renderAutocompleteButton(ctrl)}
       {renderBackwardButton(ctrl)}
       {renderForwardButton(ctrl)}
     </section>

@@ -39,6 +39,10 @@ export function applyPeripheralSynchronized(st: State, isSynchronized: boolean) 
   st.peripheral.isSynchronized = isSynchronized
 }
 
+export function applyPeripheralSettable(st: State, isSettable: boolean) {
+  st.peripheral.isSettable = isSettable
+}
+
 export function applyPeripheralPieces(st: State, peripheralFen: string) {
   st.peripheral.pieces = fen.convertFenToPeripheralPieces(peripheralFen)
 }

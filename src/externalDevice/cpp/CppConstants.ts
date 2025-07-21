@@ -3,6 +3,7 @@ export enum Feature {
   Check = 'check',
   Msg = 'msg',
   Side = 'side',
+  SetState = 'set_state',
   Option = 'option',
 }
 
@@ -28,6 +29,7 @@ export enum Command {
   State = 'state',
   Sync = 'sync',
   Unsync = 'unsync',
+  UnsyncSettable = 'unsync_settable',
   End = 'end',
   Move = 'move',
   Promote = 'promote',
@@ -36,6 +38,7 @@ export enum Command {
   Check = 'check',
   Msg = 'msg',
   Side = 'side',
+  SetState = 'set_state',
   OptionsBegin = 'options_begin',
   OptionsEnd = 'options_end',
   OptionsReset = 'options_reset',
