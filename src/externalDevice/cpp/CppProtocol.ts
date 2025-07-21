@@ -1,5 +1,5 @@
 import { BaseProtocol, BaseState } from '../BaseProtocol'
-import { isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, sendStateChangeToCentral, sendOptionsUpdateToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyVariantSupported, applyPeripheralSynchronized, applyPeripheralSetible, applyPeripheralPieces, createValuesIterator } from '../utils/utils'
+import { isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, sendStateChangeToCentral, sendOptionsUpdateToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyVariantSupported, applyPeripheralSynchronized, applyPeripheralSettable, applyPeripheralPieces, createValuesIterator } from '../utils/utils'
 import { Command, EndReason, Side } from './CppConstants'
 import { Support } from '../utils/Support'
 import { CppFeatures, CppWrappedFeatures } from './CppFeatures'
@@ -226,7 +226,7 @@ class Round extends Idle {
   }
   onCentralSetState() {
     sendCommandToPeripheral(`${Command.SetState}`)
-    applyPeripheralSetible(this.getState(), false)
+    applyPeripheralSettable(this.getState(), false)
     sendStateChangeToCentral()
   }
   onPeripheralCommand(cmd: string) {
@@ -242,18 +242,18 @@ class Round extends Idle {
       const peripheralFen = getCommandParams(cmd)
       applyPeripheralPieces(state, peripheralFen)
       applyPeripheralSynchronized(state, true)
-      applyPeripheralSetible(state, false)
+      applyPeripheralSettable(state, false)
       applyPeripheralMoveRejected(state, false)
       sendStateChangeToCentral()
       Toast.show({ text: i18n('synchronized') })
     }
-    else if (cmd.startsWith(Command.UnsyncSetible)) {
+    else if (cmd.startsWith(Command.UnsyncSettable)) {
       const state = this.getState()
       const wasSynchronized = state.peripheral.isSynchronized
       const peripheralFen = getCommandParams(cmd)
       applyPeripheralPieces(state, peripheralFen)
       applyPeripheralSynchronized(state, false)
-      applyPeripheralSetible(state, true)
+      applyPeripheralSettable(state, true)
       applyPeripheralMoveRejected(state, false)
       sendStateChangeToCentral()
       if (wasSynchronized)
@@ -265,7 +265,7 @@ class Round extends Idle {
       const peripheralFen = getCommandParams(cmd)
       applyPeripheralPieces(state, peripheralFen)
       applyPeripheralSynchronized(state, false)
-      applyPeripheralSetible(state, false)
+      applyPeripheralSettable(state, false)
       applyPeripheralMoveRejected(state, false)
       sendStateChangeToCentral()
       if (wasSynchronized)

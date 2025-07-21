@@ -29,7 +29,7 @@ export enum Command {
   State = 'state',
   Sync = 'sync',
   Unsync = 'unsync',
-  UnsyncSetible = 'unsync_setible',
+  UnsyncSettable = 'unsync_settable',
   End = 'end',
   Move = 'move',
   Promote = 'promote',

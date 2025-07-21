@@ -167,7 +167,7 @@ export function renderAutocompleteButton(ctrl: OfflineRoundInterface) {
   return externalDevice.features().setState ? h('button.action_bar_button.fa.fa-magic', {
     oncreate: helper.ontap(externalDevice.onCentralSetState),
     className: helper.classSet({
-      disabled: !(!peripheral.isSynchronized && peripheral.isSetible),
+      disabled: !(!peripheral.isSynchronized && peripheral.isSettable),
     })
   }) : null
 }

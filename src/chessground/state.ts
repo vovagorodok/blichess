@@ -88,7 +88,7 @@ export interface State {
     lastPromotion: Role | null
     isVariantSupported: boolean,
     isSynchronized: boolean,
-    isSetible: boolean,
+    isSettable: boolean,
     pieces: cg.PeripheralPieces
   }
 }
@@ -168,7 +168,7 @@ export function makeDefaults(): State {
       lastPromotion: null,
       isVariantSupported: false,
       isSynchronized: true,
-      isSetible: false,
+      isSettable: false,
       pieces: new Map()
     }
   }

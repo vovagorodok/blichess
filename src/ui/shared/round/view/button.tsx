@@ -292,7 +292,7 @@ export default {
   },
   autocomplete(ctrl: OnlineRound) {
     const peripheral = ctrl.chessground.state.peripheral
-    const enabled = !peripheral.isSynchronized && peripheral.isSetible
+    const enabled = !peripheral.isSynchronized && peripheral.isSettable
     const className = helper.classSet({
       'action_bar_button': true,
       'fa': true,
