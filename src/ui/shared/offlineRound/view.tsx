@@ -164,10 +164,11 @@ export function renderInlineReplay(ctrl: OfflineRoundInterface) {
 
 export function renderAutocompleteButton(ctrl: OfflineRoundInterface) {
   const peripheral = ctrl.chessground.state.peripheral
+  const enabled = !peripheral.isSynchronized && peripheral.isSettable
   return externalDevice.features().setState ? h('button.action_bar_button.fa.fa-magic', {
     oncreate: helper.ontap(externalDevice.onCentralSetState),
     className: helper.classSet({
-      disabled: !(!peripheral.isSynchronized && peripheral.isSettable),
+      disabled: !enabled,
     })
   }) : null
 }
