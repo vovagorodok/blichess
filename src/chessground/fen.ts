@@ -47,8 +47,8 @@ export function convertFenToPeripheralPieces(fen: string): cg.PeripheralPieces {
           ++col
           const role = c.toLowerCase()
           pieces.set(util.pos2key([col, row] as cg.Pos), {
-            role: 'wb?'.includes(role) ? undefined : roles[role],
-            color: role === '?' ? undefined : role === 'w' ? 'white' : c === role ? 'black' : 'white'
+            role: 'u?'.includes(role) ? undefined : roles[role],
+            color: role === '?' ? undefined : c === role ? 'black' : 'white'
           })
         }
       }
@@ -97,6 +97,26 @@ export function convertFenToPieces(fen: string): cg.Pieces {
   return pieces
 }
 
+function convertPeripheralPiecesToFen(pieces: cg.PeripheralPieces) {
+  return [8, 7, 6, 5, 4, 3, 2].reduce(
+    function(str, nb) {
+      return str.replace(new RegExp(Array(nb + 1).join('1'), 'g'), String(nb))
+    },
+    util.invRanks.map((y) => {
+      return util.ranks.map((x) => {
+        const piece = pieces.get(util.pos2key([x, y]))
+        if (piece) {
+          if (piece.role) {
+            const letter = letters[piece.role]
+            return piece.color === 'white' ? letter.toUpperCase() : letter
+          } else {
+            return piece.color ? (piece.color === 'white' ? 'U' : 'u') : '?'
+          }
+        } else return '1'
+      }).join('')
+    }).join('/'))
+}
+
 function convertPiecesToFen(pieces: cg.Pieces) {
   return [8, 7, 6, 5, 4, 3, 2].reduce(
     function(str, nb) {
@@ -116,5 +136,6 @@ function convertPiecesToFen(pieces: cg.Pieces) {
 export default {
   convertFenToPeripheralPieces,
   convertFenToPieces,
+  convertPeripheralPiecesToFen,
   convertPiecesToFen
 }

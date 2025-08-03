@@ -8,6 +8,15 @@ export function isCentralStateCreated(st: State): boolean {
   return st.pieces.size !== 0
 }
 
+export function isPeripheralStateGettable(st: State): boolean {
+  const pieces = st.peripheral.pieces;
+  for (const piece of pieces.values()) {
+    if (piece.role === undefined || piece.color === undefined)
+      return false;
+  }
+  return true;
+}
+
 export function isUserTurn(st: State): boolean {
   return st.otb || st.orientation === st.turnColor
 }
@@ -37,6 +46,10 @@ export function applyVariantSupported(st: State, isVariantSupported: boolean) {
 
 export function applyPeripheralSynchronized(st: State, isSynchronized: boolean) {
   st.peripheral.isSynchronized = isSynchronized
+}
+
+export function applyPeripheralGettable(st: State, isGettable: boolean) {
+  st.peripheral.isGettable = isGettable
 }
 
 export function applyPeripheralSettable(st: State, isSettable: boolean) {

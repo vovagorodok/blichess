@@ -881,6 +881,7 @@ export default {
   "startFromCustomPosition": "Start from custom position",
   "loadAGameByUrl": "Load a game by URL",
   "loadAPositionFromFen": "Load a position from FEN",
+  "loadAPositionFromDevice": "Load a position from device",
   "loadAGameFromPgn": "Load a game from PGN",
   "automatic": "Automatic",
   "urlOfTheGame": "URL of the games, one per line",

@@ -30,6 +30,7 @@ export default class Chessground {
 
   attach(wrapper: HTMLElement, bounds: ClientRect): void {
     const isViewOnly = this.state.fixed || this.state.viewOnly
+    const isEdit = this.state.edit
     const board = document.createElement('div')
     board.className = 'cg-board'
     if (isViewOnly) board.className += ' view-only'
@@ -77,14 +78,19 @@ export default class Chessground {
 
     if (!isViewOnly) {
       external.subscribe(this.externalMove, this.redraw)
-      external.onCentralStateCreated(this.state)
+      if (isEdit) {
+        if (external.features().getState)
+          external.onCentralGetState()
+      } else {
+        external.onCentralStateCreated(this.state)
+      }
     }
 
     window.addEventListener('resize', this.onOrientationChange)
   }
 
   detach = () => {
-    external.unsubscribe()
+    // external.unsubscribe() // TODO: EditorCtrl detaches when started, uncomment after fix
     this.dom = undefined
     window.removeEventListener('resize', this.onOrientationChange)
   }

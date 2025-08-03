@@ -955,6 +955,7 @@ export default {
   "startFromCustomPosition": "Начать со своей позиции",
   "loadAGameByUrl": "Загрузить игру по URL",
   "loadAPositionFromFen": "Загрузить позицию из FEN",
+  "loadAPositionFromDevice": "Загрузить позицию из устройства",
   "loadAGameFromPgn": "Загрузить игру из PGN",
   "automatic": "Автоматически",
   "urlOfTheGame": "URL игры",

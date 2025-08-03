@@ -21,6 +21,7 @@ export interface InitConfig {
   autoCastle?: boolean
   viewOnly?: boolean
   fixed?: boolean
+  edit?: boolean
   otb?: boolean
   otbMode?: OtbMode
   highlight?: {

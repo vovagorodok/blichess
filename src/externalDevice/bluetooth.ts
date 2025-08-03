@@ -115,6 +115,9 @@ export default {
   sendCommandToPeripheral(cmd: string) {
     bluetoothConnection.sendCommandToPeripheral(cmd)
   },
+  state() {
+    return bluetoothConnection.centralState
+  },
   features() {
     return bluetoothConnection.protocol.features()
   },

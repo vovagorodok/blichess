@@ -17,6 +17,7 @@ export interface Protocol {
   onCentralStateEnded(status?: GameStatus): void
   onMoveRejectedByCentral(): void
 
+  onCentralGetState(): void
   onCentralSetState(): void
   onCentralOptionsReset(): void
 }
