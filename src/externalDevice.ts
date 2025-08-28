@@ -29,6 +29,9 @@ export default {
   onMoveRejectedByCentral() {
     bluetooth.protocol().onMoveRejectedByCentral()
   },
+  onCentralGetState() {
+    bluetooth.protocol().onCentralGetState()
+  },
   onCentralSetState() {
     bluetooth.protocol().onCentralSetState()
   },
@@ -37,11 +40,14 @@ export default {
   },
   sendStateChangeToCentral() {
     onPeripheralStateChange?.()
-    if (this.features().setState)
+    if (this.features().getState || this.features().setState)
       redraw()
   },
   sendOptionsUpdateToCentral() {
     bluetooth.updateSettings()
+  },
+  state() {
+    return bluetooth.state()
   },
   features() {
     return bluetooth.features()

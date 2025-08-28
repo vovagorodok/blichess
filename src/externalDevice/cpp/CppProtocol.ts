@@ -1,5 +1,5 @@
 import { BaseProtocol, BaseState } from '../BaseProtocol'
-import { isCentralStateCreated, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, sendStateChangeToCentral, sendOptionsUpdateToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyVariantSupported, applyPeripheralSynchronized, applyPeripheralSettable, applyPeripheralPieces, createValuesIterator } from '../utils/utils'
+import { isCentralStateCreated, isPeripheralStateGettable, createFullFen, lastMoveToUci, getCommandParams, sendCommandToPeripheral, sendMoveToCentral, sendStateChangeToCentral, sendOptionsUpdateToCentral, applyPeripheralMoveRejected, applyPeripheralLastMove, applyVariantSupported, applyPeripheralSynchronized, applyPeripheralGettable, applyPeripheralSettable, applyPeripheralPieces, createValuesIterator } from '../utils/utils'
 import { Command, EndReason, Side } from './CppConstants'
 import { Support } from '../utils/Support'
 import { CppFeatures, CppWrappedFeatures } from './CppFeatures'
@@ -208,6 +208,27 @@ class Idle extends BleChessState {
   onCentralStateCreated(st: State) {
     this.setState(st)
     this.transitionTo(new RoundBegin)
+  }
+  onCentralGetState() {
+    this.transitionTo(new GetState)
+  }
+}
+
+class GetState extends Idle {
+  onEnter() {
+    sendCommandToPeripheral(`${Command.GetState}`)
+    applyPeripheralGettable(this.getState(), false)
+    sendStateChangeToCentral()
+  }
+  onPeripheralCommand(cmd: string) {
+    if (cmd.startsWith(Command.State)) {
+      const state = this.getState()
+      const peripheralFen = getCommandParams(cmd)
+      applyPeripheralPieces(state, peripheralFen)
+      applyPeripheralGettable(state, isPeripheralStateGettable(state))
+      sendStateChangeToCentral()
+    }
+    else super.onPeripheralCommand(cmd)
   }
 }
 

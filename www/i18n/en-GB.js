@@ -930,6 +930,7 @@ export default {
   "startFromCustomPosition": "Start from custom position",
   "loadAGameByUrl": "Load games by URLs",
   "loadAPositionFromFen": "Load a position from FEN",
+  "loadAPositionFromDevice": "Load a position from device",
   "loadAGameFromPgn": "Load games from PGN",
   "automatic": "Automatic",
   "urlOfTheGame": "URL of the games, one per line",

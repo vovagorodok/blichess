@@ -959,6 +959,7 @@ export default {
   "startFromCustomPosition": "Rozpocznij z ustawionej pozycji",
   "loadAGameByUrl": "Zaimportuj partię z linku",
   "loadAPositionFromFen": "Zaimportuj partię z FEN",
+  "loadAPositionFromDevice": "Zaimportuj partię z urządzenia",
   "loadAGameFromPgn": "Zaimportuj partię z PGN",
   "automatic": "Automatycznie",
   "urlOfTheGame": "Link do partii",

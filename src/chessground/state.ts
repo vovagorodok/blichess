@@ -16,6 +16,7 @@ export interface State {
   autoCastle: boolean // immediately complete the castle by moving the rook after king move
   viewOnly: boolean // don't bind events: the user will never be able to move pieces around
   fixed: boolean // board is viewOnly and pieces won't move
+  edit: boolean // board is in edit mode
   exploding: cg.Exploding | null
   otb: boolean // is this an otb game?
   otbMode: cg.OtbMode
@@ -88,6 +89,7 @@ export interface State {
     lastPromotion: Role | null
     isVariantSupported: boolean,
     isSynchronized: boolean,
+    isGettable: boolean,
     isSettable: boolean,
     pieces: cg.PeripheralPieces
   }
@@ -110,6 +112,7 @@ export function makeDefaults(): State {
     autoCastle: true,
     viewOnly: false,
     fixed: false,
+    edit: false,
     exploding: null,
     highlight: {
       lastMove: true,
@@ -168,6 +171,7 @@ export function makeDefaults(): State {
       lastPromotion: null,
       isVariantSupported: false,
       isSynchronized: true,
+      isGettable: false,
       isSettable: false,
       pieces: new Map()
     }

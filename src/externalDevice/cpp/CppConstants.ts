@@ -3,6 +3,7 @@ export enum Feature {
   Check = 'check',
   Msg = 'msg',
   Side = 'side',
+  GetState = 'get_state',
   SetState = 'set_state',
   Option = 'option',
 }
@@ -38,6 +39,7 @@ export enum Command {
   Check = 'check',
   Msg = 'msg',
   Side = 'side',
+  GetState = 'get_state',
   SetState = 'set_state',
   OptionsBegin = 'options_begin',
   OptionsEnd = 'options_end',

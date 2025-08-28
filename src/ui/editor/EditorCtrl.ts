@@ -8,6 +8,7 @@ import { makeFen, parseFen, parseCastlingFen, INITIAL_FEN, EMPTY_FEN } from 'che
 
 import Chessground from '../../chessground/Chessground'
 import * as cgDrag from '../../chessground/drag'
+import cgFen from '../../chessground/fen'
 import router from '../../router'
 import { loadLocalJsonFile } from '../../utils'
 import redraw from '../../utils/redraw'
@@ -18,6 +19,7 @@ import continuePopup, { Controller as ContinuePopupCtrl } from '../shared/contin
 import i18n from '../../i18n'
 import drag from './drag'
 import { EditorState, BoardPosition, BoardPositionCategory, CastlingToggle, CastlingToggles, CASTLING_TOGGLES } from './interfaces'
+import external from '../../externalDevice'
 
 export default class EditorCtrl {
   public menu: MenuInterface
@@ -73,6 +75,7 @@ export default class EditorCtrl {
     this.chessground = new Chessground({
       fen: this.initFen,
       orientation: 'white',
+      edit: true,
       movable: {
         free: true,
         color: 'both'
@@ -209,6 +212,11 @@ export default class EditorCtrl {
 
   public loadNewFen = (newFen: string): boolean => {
     return this.setFen(newFen)
+  }
+
+  public loadPeripheralFen = (): boolean => {
+    const state = external.state()
+    return this.setFen(cgFen.convertPeripheralPiecesToFen(state.peripheral.pieces))
   }
 
   public goToAnalyse = (): void => {

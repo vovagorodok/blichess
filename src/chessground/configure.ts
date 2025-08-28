@@ -35,6 +35,10 @@ export function configureBoard(state: State, config: cg.InitConfig): void {
   // fix move/premove dests
   if (state.selected) board.setSelected(state, state.selected)
 
+  if (config.edit) {
+    state.edit = config.edit
+  }
+
   // no need for such short animations
   if (!state.animation.duration || state.animation.duration < 100) {
     state.animation.enabled = false
