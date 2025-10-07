@@ -51,7 +51,7 @@ export default function EdgeOpenHandler(ctrl: SideMenuCtrl): Handlers {
 
     panmove: (gesture: Gesture) => (e: TouchEvent) => {
       if (state.canSlide) {
-        if (Capacitor.platform === 'ios') {
+        if (Capacitor.getPlatform() === 'ios') {
           // disable scrolling of content when sliding menu
           if (!e.defaultPrevented) {
             e.preventDefault()

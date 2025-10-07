@@ -44,7 +44,7 @@ export default {
           <ul className="about_links">
             <li>{externalLink('Github', 'https://github.com/lichess-org/lichobile')}</li>
             <li>{externalLink('Contribute', 'https://lichess.org/help/contribute')}</li>
-            { Capacitor.platform !== 'ios' ?
+            { Capacitor.getPlatform() !== 'ios' ?
               <li>{externalLink('Donate', 'https://lichess.org/patron')}</li> :
               null
             }

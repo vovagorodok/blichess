@@ -40,7 +40,7 @@ export default {
       body(this.ctrl),
       undefined,
       undefined,
-      Capacitor.platform === 'ios' ? this.ctrl.onScroll : undefined,
+      Capacitor.getPlatform() === 'ios' ? this.ctrl.onScroll : undefined,
     )
   }
 } as Mithril.Component<Attrs, State>

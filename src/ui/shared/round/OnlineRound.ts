@@ -581,7 +581,7 @@ export default class OnlineRound implements OnlineRoundInterface {
     if (this.data.game.speed === 'correspondence') {
       session.refresh()
       .then(() => {
-        if (Capacitor.platform === 'ios') {
+        if (Capacitor.getPlatform() === 'ios') {
           Badge.setNumber({ badge: session.myTurnGames().length })
         }
       })

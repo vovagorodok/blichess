@@ -57,7 +57,7 @@ export default class Engine {
 
   public async setLevel(l: number): Promise<void> {
     this.level = l
-    return Capacitor.platform === 'ios' || Capacitor.platform === 'android' ?
+    return Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android' ?
       this.stockfish.setOption('UCI_Elo', elo(this.level)) :
       this.stockfish.setOption('Skill Level', String(skill(this.level)))
   }

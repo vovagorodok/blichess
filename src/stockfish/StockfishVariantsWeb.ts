@@ -5,10 +5,7 @@ export class StockfishVariantsWeb extends WebPlugin implements StockfishPlugin {
   private worker?: Worker
 
   constructor() {
-    super({
-      name: 'StockfishVariants',
-      platforms: ['web']
-    })
+    super()
   }
 
   async getMaxMemory(): Promise<{ value: number }> {

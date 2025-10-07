@@ -100,7 +100,7 @@ export default {
 function handleMenuOpen({ dom }: Mithril.VnodeDOM<any, any>) {
   const mainEl = dom as HTMLElement
   const gesture = new Gesture(mainEl, viewportDim(), {
-    passiveMove: Capacitor.platform !== 'ios'
+    passiveMove: Capacitor.getPlatform() !== 'ios'
   })
 
   const defaultHandlers: Handlers = EdgeOpenHandler(menu.mainMenuCtrl)
