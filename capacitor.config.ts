@@ -21,6 +21,9 @@ const config: CapacitorConfig = {
   ios: {
     scheme: 'lichess',
   },
+  android: {
+    adjustMarginsForEdgeToEdge: 'force',
+  },
   server: {
     hostname: 'localhost',
     androidScheme: 'http'
