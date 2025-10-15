@@ -13,6 +13,7 @@ import i18n from '../../i18n'
 import friendsPopup from '../friendsPopup'
 import { backArrow } from './icons'
 import { BaseUser } from '../../lichess/interfaces/user'
+import external from '../../externalDevice'
 
 export function menuButton() {
   return h('button.fa.fa-navicon.main_header_button.menu_button', {
@@ -36,6 +37,50 @@ export function bookmarkButton(action: () => void, flag: boolean): Mithril.Child
   }, h('span', {
     'data-icon': flag ? 't' : 's'
   })) : null
+}
+
+export function bluetoothButtons() {
+  const isConnected = external.isConnected()
+  const batteryLevel = external.batteryLevel()
+
+  if (!settings.general.bluetooth.useDevice()) return null
+
+  const goToBluetooth = () => {
+    if (router.get() !== '/settings/bluetooth') {
+      router.set('/settings/bluetooth')
+    }
+  }
+
+  if (isConnected) {
+    const buttons = []
+
+    if (batteryLevel !== undefined) {
+      let batteryIcon = 'fa-battery-full'
+      if (batteryLevel <= 10) batteryIcon = 'fa-battery-empty'
+      else if (batteryLevel <= 30) batteryIcon = 'fa-battery-quarter'
+      else if (batteryLevel <= 60) batteryIcon = 'fa-battery-half'
+      else if (batteryLevel <= 90) batteryIcon = 'fa-battery-three-quarters'
+
+      buttons.push(
+        h(`button.main_header_button.fa ${batteryIcon}`, {
+          oncreate: helper.ontap(goToBluetooth),
+        })
+      )
+    }
+
+    buttons.push(
+      h(`button.main_header_button.fa.fa-bluetooth`, {
+        oncreate: helper.ontap(goToBluetooth),
+      })
+    )
+
+    return buttons
+  }
+
+  return h(`button.main_header_button.fa.fa-bluetooth-b`, {
+    oncreate: helper.ontap(goToBluetooth),
+    disabled: true
+  })
 }
 
 export function friendsButton() {
@@ -106,6 +151,7 @@ export function headerBtns() {
   if (session.isConnected() && friendsApi.count()) {
     return (
       <div className="buttons" oncreate={handler}>
+        {bluetoothButtons()}
         {friendsButton()}
         {gamesButton()}
       </div>
@@ -114,6 +160,7 @@ export function headerBtns() {
   else {
     return (
       <div className="buttons" oncreate={handler}>
+        {bluetoothButtons()}
         {gamesButton()}
       </div>
     )

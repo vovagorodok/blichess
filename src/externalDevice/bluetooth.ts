@@ -18,18 +18,35 @@ interface ChessService {
   protocol: any
 }
 
-const SUPPOTRED_SERVICES: ChessService[] = [
+const SUPPOTRED_CHESS_SERVICES: ChessService[] = [
   { uuids: { srv:  'f5351050-b2c9-11ec-a0c0-b3bc53b08d33',
              txCh: 'f53513ca-b2c9-11ec-a0c1-639b8957db99',
              rxCh: 'f535147e-b2c9-11ec-a0c2-8bbd706ec4e6' },
     protocol: CppProtocol }
 ]
 
+interface BatteryServiceUUIDs {
+  readonly srv: string
+  readonly levelCh: string
+}
+
+interface BatteryService {
+  readonly uuids: BatteryServiceUUIDs
+  level?: number
+}
+
+const BATTERY_SERVICE: BatteryService = {
+  uuids: { srv:     '0000180f-0000-1000-8000-00805f9b34fb',
+           levelCh: '00002a19-0000-1000-8000-00805f9b34fb' },
+  level: undefined
+}
+
 class BluetoothConnection {
   isConnected: boolean = false
   protocol: Protocol = dummyProtocol
   centralState: State = makeDefaults()
   lastMove: KeyPair | null = null
+  batteryService: BatteryService = BATTERY_SERVICE
   private uuids?: ChessServiceUUIDs
 
   private getDeviceId(): string {
@@ -41,21 +58,22 @@ class BluetoothConnection {
       return
     this.isConnected = false
     this.protocol = dummyProtocol
-    Toast.show({ text: i18n('disconnectedFromBluetoothDevice') })
+    this.batteryService.level = undefined
     redraw()
+    Toast.show({ text: i18n('disconnectedFromBluetoothDevice') })
     if (settings.general.bluetooth.useDevice())
       this.connect()
   }
 
   async requestDevice(): Promise<BleDevice> {
     return await BleClient.requestDevice({
-      services: SUPPOTRED_SERVICES.map(value => value.uuids.srv)
+      services: SUPPOTRED_CHESS_SERVICES.map(value => value.uuids.srv)
     })
   }
 
-  private async setupService() {
+  private async setupChessService() {
     const connectedServices = await BleClient.getServices(this.getDeviceId())
-    for (const supportedService of SUPPOTRED_SERVICES)
+    for (const supportedService of SUPPOTRED_CHESS_SERVICES)
       if (connectedServices.some(connectedService => supportedService.uuids.srv === connectedService.uuid)) {
           this.uuids = supportedService.uuids
           this.protocol = new supportedService.protocol
@@ -63,19 +81,32 @@ class BluetoothConnection {
       }
   }
 
+  private async setupBatteryService() {
+    const connectedServices = await BleClient.getServices(this.getDeviceId())
+    const iSupported = connectedServices.some(connectedService => this.batteryService.uuids.srv === connectedService.uuid)
+    if (iSupported) {
+      const level = await BleClient.read(this.getDeviceId(), this.batteryService.uuids.srv, this.batteryService.uuids.levelCh)
+      this.batteryService.level = level.getUint8(0)
+      await this.registerBatteryCallback()
+    }
+  }
+
   async connect() {
     await BleClient.connect(this.getDeviceId(), deviceId => this.onDisconnect(deviceId))
-    await this.setupService()
-    await this.registerCallback()
+    await this.setupChessService()
+    await this.registerChessCallback()
+    await this.setupBatteryService()
     this.protocol.init(this.centralState)
     this.isConnected = true
+    redraw()
     Toast.show({ text: i18n('connectedToBluetoothDevice') })
   }
 
   async disconnect() {
     if (!this.isConnected)
       return
-    await this.unregisterCallback()
+    await this.unregisterChessCallback()
+    await this.unregisterBatteryCallback()
     await BleClient.disconnect(this.getDeviceId())
   }
 
@@ -87,12 +118,25 @@ class BluetoothConnection {
     this.protocol.onPeripheralCommand(dataViewToText(data))
   }
 
-  private async registerCallback() {
+  private async registerChessCallback() {
     await BleClient.startNotifications(this.getDeviceId(), this.uuids!.srv, this.uuids!.rxCh, (data) => this.reciveData(data))
   }
 
-  private async unregisterCallback() {
+  private async unregisterChessCallback() {
     await BleClient.stopNotifications(this.getDeviceId(), this.uuids!.srv, this.uuids!.rxCh)
+  }
+
+  private async registerBatteryCallback() {
+    await BleClient.startNotifications(this.getDeviceId(), this.batteryService.uuids.srv, this.batteryService.uuids.levelCh, (data) => {
+      this.batteryService.level = data.getUint8(0)
+      redraw()
+    })
+  }
+
+  private async unregisterBatteryCallback() {
+    if (this.batteryService.level !== undefined) {
+      await BleClient.stopNotifications(this.getDeviceId(), this.batteryService.uuids.srv, this.batteryService.uuids.levelCh)
+    }
   }
 }
 
@@ -126,6 +170,12 @@ export default {
   },
   options() {
     return bluetoothConnection.protocol.options()
+  },
+  isConnected() {
+    return bluetoothConnection.isConnected
+  },
+  batteryLevel() {
+    return bluetoothConnection.batteryService.level
   },
   init() {
     if (settings.general.bluetooth.useDevice()) {
