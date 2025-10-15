@@ -40,10 +40,10 @@ export function bookmarkButton(action: () => void, flag: boolean): Mithril.Child
 }
 
 export function bluetoothButtons() {
+  if (!settings.general.bluetooth.useDevice()) return null
+
   const isConnected = external.isConnected()
   const batteryLevel = external.batteryLevel()
-
-  if (!settings.general.bluetooth.useDevice()) return null
 
   const goToBluetooth = () => {
     if (router.get() !== '/settings/bluetooth') {
