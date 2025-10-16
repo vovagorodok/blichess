@@ -56,10 +56,10 @@ export function bluetoothButtons() {
 
     if (batteryLevel !== undefined) {
       let batteryIcon = 'fa-battery-full'
-      if (batteryLevel <= 10) batteryIcon = 'fa-battery-empty'
-      else if (batteryLevel <= 30) batteryIcon = 'fa-battery-quarter'
-      else if (batteryLevel <= 60) batteryIcon = 'fa-battery-half'
-      else if (batteryLevel <= 90) batteryIcon = 'fa-battery-three-quarters'
+      if (batteryLevel <= 5) batteryIcon = 'fa-battery-empty'
+      else if (batteryLevel <= 35) batteryIcon = 'fa-battery-quarter'
+      else if (batteryLevel <= 65) batteryIcon = 'fa-battery-half'
+      else if (batteryLevel <= 95) batteryIcon = 'fa-battery-three-quarters'
 
       buttons.push(
         h(`button.main_header_button.fa ${batteryIcon}`, {
