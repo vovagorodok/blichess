@@ -13,6 +13,7 @@ import i18n from '../../i18n'
 import friendsPopup from '../friendsPopup'
 import { backArrow } from './icons'
 import { BaseUser } from '../../lichess/interfaces/user'
+import external from '../../externalDevice'
 
 export function menuButton() {
   return h('button.fa.fa-navicon.main_header_button.menu_button', {
@@ -36,6 +37,42 @@ export function bookmarkButton(action: () => void, flag: boolean): Mithril.Child
   }, h('span', {
     'data-icon': flag ? 't' : 's'
   })) : null
+}
+
+export function bluetoothButtons() {
+  if (!settings.general.bluetooth.useDevice()) return null
+
+  const isConnected = external.isConnected()
+  const batteryLevel = external.batteryLevel()
+
+  const goToBluetooth = () => {
+    if (router.get() !== '/settings/bluetooth') {
+      router.set('/settings/bluetooth')
+    }
+  }
+
+  const buttons = [
+    h(`button.main_header_button.fa.${isConnected ? 'fa-bluetooth' : 'fa-bluetooth-b'}`, {
+      oncreate: helper.ontap(goToBluetooth),
+      disabled: !isConnected
+    })
+  ]
+
+  if (isConnected && batteryLevel !== undefined) {
+    let batteryIcon = 'fa-battery-full'
+    if (batteryLevel <= 5) batteryIcon = 'fa-battery-empty'
+    else if (batteryLevel <= 35) batteryIcon = 'fa-battery-quarter'
+    else if (batteryLevel <= 65) batteryIcon = 'fa-battery-half'
+    else if (batteryLevel <= 95) batteryIcon = 'fa-battery-three-quarters'
+
+    buttons.unshift(
+      h(`button.main_header_button.fa.${batteryIcon}`, {
+        oncreate: helper.ontap(goToBluetooth),
+      })
+    )
+  }
+
+  return buttons
 }
 
 export function friendsButton() {
@@ -106,6 +143,7 @@ export function headerBtns() {
   if (session.isConnected() && friendsApi.count()) {
     return (
       <div className="buttons" oncreate={handler}>
+        {bluetoothButtons()}
         {friendsButton()}
         {gamesButton()}
       </div>
@@ -114,6 +152,7 @@ export function headerBtns() {
   else {
     return (
       <div className="buttons" oncreate={handler}>
+        {bluetoothButtons()}
         {gamesButton()}
       </div>
     )

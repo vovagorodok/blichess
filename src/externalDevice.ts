@@ -65,5 +65,11 @@ export default {
   unsubscribe() {
     onPeripheralMove = undefined
     onPeripheralStateChange = undefined
+  },
+  isConnected() {
+    return bluetooth.isConnected()
+  },
+  batteryLevel() {
+    return bluetooth.batteryLevel()
   }
 }
