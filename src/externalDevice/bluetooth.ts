@@ -83,8 +83,8 @@ class BluetoothConnection {
 
   private async setupBatteryService() {
     const connectedServices = await BleClient.getServices(this.getDeviceId())
-    const iSupported = connectedServices.some(connectedService => this.batteryService.uuids.srv === connectedService.uuid)
-    if (iSupported) {
+    const isBatteryService = connectedServices.some(connectedService => this.batteryService.uuids.srv === connectedService.uuid)
+    if (isBatteryService) {
       const level = await BleClient.read(this.getDeviceId(), this.batteryService.uuids.srv, this.batteryService.uuids.levelCh)
       this.batteryService.level = level.getUint8(0)
       await this.registerBatteryCallback()
