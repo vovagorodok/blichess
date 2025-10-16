@@ -72,9 +72,9 @@ class BluetoothConnection {
   }
 
   private async setupChessService() {
-    const connectedServices = await BleClient.getServices(this.getDeviceId())
+    const services = await BleClient.getServices(this.getDeviceId())
     for (const supportedService of SUPPOTRED_CHESS_SERVICES)
-      if (connectedServices.some(connectedService => supportedService.uuids.srv === connectedService.uuid)) {
+      if (services.some(service => supportedService.uuids.srv === service.uuid)) {
           this.uuids = supportedService.uuids
           this.protocol = new supportedService.protocol
           return
@@ -82,8 +82,8 @@ class BluetoothConnection {
   }
 
   private async setupBatteryService() {
-    const connectedServices = await BleClient.getServices(this.getDeviceId())
-    const isBatteryService = connectedServices.some(connectedService => this.batteryService.uuids.srv === connectedService.uuid)
+    const services = await BleClient.getServices(this.getDeviceId())
+    const isBatteryService = services.some(service => this.batteryService.uuids.srv === service.uuid)
     if (isBatteryService) {
       const level = await BleClient.read(this.getDeviceId(), this.batteryService.uuids.srv, this.batteryService.uuids.levelCh)
       this.batteryService.level = level.getUint8(0)
