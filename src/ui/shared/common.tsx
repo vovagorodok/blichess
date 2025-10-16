@@ -51,36 +51,28 @@ export function bluetoothButtons() {
     }
   }
 
-  if (isConnected) {
-    const buttons = []
+  const buttons = [
+    h(`button.main_header_button.fa.${isConnected ? 'fa-bluetooth' : 'fa-bluetooth-b'}`, {
+      oncreate: helper.ontap(goToBluetooth),
+      disabled: !isConnected
+    })
+  ]
 
-    if (batteryLevel !== undefined) {
-      let batteryIcon = 'fa-battery-full'
-      if (batteryLevel <= 5) batteryIcon = 'fa-battery-empty'
-      else if (batteryLevel <= 35) batteryIcon = 'fa-battery-quarter'
-      else if (batteryLevel <= 65) batteryIcon = 'fa-battery-half'
-      else if (batteryLevel <= 95) batteryIcon = 'fa-battery-three-quarters'
+  if (isConnected && batteryLevel !== undefined) {
+    let batteryIcon = 'fa-battery-full'
+    if (batteryLevel <= 5) batteryIcon = 'fa-battery-empty'
+    else if (batteryLevel <= 35) batteryIcon = 'fa-battery-quarter'
+    else if (batteryLevel <= 65) batteryIcon = 'fa-battery-half'
+    else if (batteryLevel <= 95) batteryIcon = 'fa-battery-three-quarters'
 
-      buttons.push(
-        h(`button.main_header_button.fa ${batteryIcon}`, {
-          oncreate: helper.ontap(goToBluetooth),
-        })
-      )
-    }
-
-    buttons.push(
-      h(`button.main_header_button.fa.fa-bluetooth`, {
+    buttons.unshift(
+      h(`button.main_header_button.fa.${batteryIcon}`, {
         oncreate: helper.ontap(goToBluetooth),
       })
     )
-
-    return buttons
   }
 
-  return h(`button.main_header_button.fa.fa-bluetooth-b`, {
-    oncreate: helper.ontap(goToBluetooth),
-    disabled: true
-  })
+  return buttons
 }
 
 export function friendsButton() {
