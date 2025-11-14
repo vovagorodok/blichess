@@ -233,10 +233,23 @@ class GetState extends Idle {
 }
 
 class Round extends Idle {
-  onCentralStateCanceled() {
-    this.transitionTo(new Idle)
-    sendCommandToPeripheral(`${Command.End} ${EndReason.Abort}`)
-    Toast.show({ text: i18n('undoUnsupported') })
+  onCentralStateShifted(shift: Shift) {
+    if (!this.getFeatures().undoRedo.isSupported) {
+      this.transitionTo(new Idle)
+      sendCommandToPeripheral(`${Command.End} ${EndReason.Abort}`)
+      Toast.show({ text: i18n('shiftUnsupported') })
+      return;
+    }
+
+    const state = this.getState()
+    const cmd = shift == 'undo' ? Command.Undo : Command.Redo
+    sendCommandToPeripheral(`${cmd} ${createFullFen(state)}`)
+    if (this.getFeatures().lastMove.isSupported && state.lastMove) {
+      sendCommandToPeripheral(`${Command.LastMove} ${lastMoveToUci(state)}`)
+    }
+    if (this.getFeatures().check.isSupported && state.check) {
+      sendCommandToPeripheral(`${Command.Check} ${state.check}`)
+    }
   }
   onCentralStateEnded(status?: GameStatus) {
     const reason = this.getEndReason(status)

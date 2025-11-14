@@ -26,6 +26,8 @@ declare type Key = 'a0' | 'a1' | 'b1' | 'c1' | 'd1' | 'e1' | 'f1' | 'g1' | 'h1' 
 
 declare type KeyPair = [Key, Key]
 
+declare type Shift = 'undo' | 'redo'
+
 declare type NumberPair = [number, number]
 
 declare type BoardPos = {

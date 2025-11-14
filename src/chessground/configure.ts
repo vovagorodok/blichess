@@ -61,6 +61,8 @@ export function setNewBoardState(d: State, config: cg.SetConfig): void {
   if (config.orientation !== undefined) d.orientation = config.orientation
   if (config.turnColor !== undefined) d.turnColor = config.turnColor
   if (config.otb !== undefined) d.otb = config.otb
+  if (config.shift !== undefined) d.shift = config.shift
+  if (config.shiftView !== undefined) d.shiftView = config.shiftView
 
   if (config.dests !== undefined) {
     d.movable.dests = config.dests

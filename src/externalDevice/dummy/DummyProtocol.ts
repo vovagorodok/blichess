@@ -15,7 +15,7 @@ export class DummyProtocol implements Protocol {
   onPeripheralCommand() {}
   onCentralStateCreated() {}
   onCentralStateChanged() {}
-  onCentralStateCanceled() {}
+  onCentralStateShifted() {}
   onCentralStateEnded() {}
   onMoveRejectedByCentral() {}
 

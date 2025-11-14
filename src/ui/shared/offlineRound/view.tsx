@@ -173,20 +173,48 @@ export function renderAutocompleteButton(ctrl: OfflineRoundInterface) {
   }) : null
 }
 
+function canJumpPrev(ctrl: OfflineRoundInterface) {
+  return ctrl.replay && ctrl.replay.ply > ctrl.firstPly()
+}
+
 export function renderBackwardButton(ctrl: OfflineRoundInterface) {
+  const jumpPrev = () => {
+    if (canJumpPrev(ctrl)) {
+      ctrl.jumpPrev()
+    }
+  }
+  const jumpFirst = () => {
+    if (canJumpPrev(ctrl)) {
+      ctrl.jumpFirst()
+    }
+  }
   return ctrl.replay ? h('button.action_bar_button.fa.fa-chevron-left', {
-    oncreate: helper.ontap(ctrl.jumpPrev, ctrl.jumpFirst),
+    oncreate: helper.ontap(jumpPrev, jumpFirst),
     className: helper.classSet({
-      disabled: !(ctrl.replay.ply > ctrl.firstPly())
+      disabled: !canJumpPrev(ctrl),
     })
   }) : null
 }
 
+function canJumpNext(ctrl: OfflineRoundInterface) {
+  return ctrl.replay && ctrl.replay.ply < ctrl.lastPly()
+}
+
 export function renderForwardButton(ctrl: OfflineRoundInterface) {
+  const jumpNext = () => {
+    if (canJumpNext(ctrl)) {
+      ctrl.jumpNext()
+    }
+  }
+  const jumpLast = () => {
+    if (canJumpNext(ctrl)) {
+      ctrl.jumpLast()
+    }
+  }
   return ctrl.replay ? h('button.action_bar_button.fa.fa-chevron-right', {
-    oncreate: helper.ontap(ctrl.jumpNext, ctrl.jumpLast),
+    oncreate: helper.ontap(jumpNext, jumpLast),
     className: helper.classSet({
-      disabled: !(ctrl.replay.ply < ctrl.lastPly())
+      disabled: !canJumpNext(ctrl)
     })
   }) : null
 }

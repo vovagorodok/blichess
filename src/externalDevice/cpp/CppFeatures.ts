@@ -6,6 +6,7 @@ export class CppFeatures {
   lastMove = new Support(Feature.LastMove)
   check = new Support(Feature.Check)
   msg = new Support(Feature.Msg)
+  undoRedo = new Support(Feature.UndoRedo)
   side = new Support(Feature.Side)
   getState = new Support(Feature.GetState)
   setState = new Support(Feature.SetState)

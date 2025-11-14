@@ -13,7 +13,7 @@ export interface Protocol {
   onPeripheralCommand(cmd: string): void
   onCentralStateCreated(st: State): void
   onCentralStateChanged(): void
-  onCentralStateCanceled(): void
+  onCentralStateShifted(shift: Shift): void
   onCentralStateEnded(status?: GameStatus): void
   onMoveRejectedByCentral(): void
 

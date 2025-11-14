@@ -20,6 +20,8 @@ export interface State {
   exploding: cg.Exploding | null
   otb: boolean // is this an otb game?
   otbMode: cg.OtbMode
+  shift: Shift | null
+  shiftView: Shift | null
   highlight: {
     lastMove: boolean // add last-move class to squares
     check: boolean // add check class to squares
@@ -109,6 +111,8 @@ export function makeDefaults(): State {
     symmetricCoordinates: false,
     otb: false,
     otbMode: 'facing' as cg.OtbMode,
+    shift: null,
+    shiftView: null,
     autoCastle: true,
     viewOnly: false,
     fixed: false,

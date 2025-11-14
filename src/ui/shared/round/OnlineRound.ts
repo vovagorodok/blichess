@@ -285,7 +285,7 @@ export default class OnlineRound implements OnlineRoundInterface {
     return this.data.steps[ply - this.firstPly()]
   }
 
-  public jump = (ply: number) => {
+  public jump = (ply: number, shift?: Shift) => {
     if (ply < this.firstPly() || ply > this.lastPly()) return false
     const wasReplaying = this.replaying()
     const isFwd = ply > this.vm.ply
@@ -296,7 +296,8 @@ export default class OnlineRound implements OnlineRoundInterface {
       fen: s.fen,
       lastMove: s.uci ? chessFormat.uciToMove(s.uci) : null,
       check: s.check,
-      turnColor: this.vm.ply % 2 === 0 ? 'white' : 'black'
+      turnColor: this.vm.ply % 2 === 0 ? 'white' : 'black',
+      shiftView: shift,
     }
     if (!this.replaying()) {
       config.movableColor = gameApi.isPlayerPlaying(this.data) ? this.data.player.color : null
@@ -318,19 +319,19 @@ export default class OnlineRound implements OnlineRoundInterface {
   }
 
   public jumpNext = () => {
-    return this.jump(this.vm.ply + 1)
+    return this.jump(this.vm.ply + 1, 'redo')
   }
 
   public jumpPrev = () => {
-    return this.jump(this.vm.ply - 1)
+    return this.jump(this.vm.ply - 1, 'undo')
   }
 
   public jumpFirst = () => {
-    return this.jump(this.firstPly())
+    return this.jump(this.firstPly(), 'undo')
   }
 
   public jumpLast = () => {
-    return this.jump(this.lastPly())
+    return this.jump(this.lastPly(), 'redo')
   }
 
   public isClockRunning(): boolean {

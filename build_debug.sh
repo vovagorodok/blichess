@@ -5,5 +5,6 @@ echo "
 }" > appconfig.prod.json
 
 npm install
+npm run fetch-nnue
 APP_MODE=dev APP_CONFIG=prod npm run build
 npx cap sync

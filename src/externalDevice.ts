@@ -17,11 +17,18 @@ export default {
     if (bluetooth.isRepeatedLastMove()) {
       return;
     }
-    bluetooth.protocol().onCentralStateChanged()
+    if (bluetooth.state().shiftView) {
+      bluetooth.state().shiftView = null
+      return;
+    }
+    if (bluetooth.state().shift) {
+      bluetooth.protocol().onCentralStateShifted(bluetooth.state().shift!)
+      bluetooth.state().shift = null
+    }
+    else {
+      bluetooth.protocol().onCentralStateChanged()
+    }
     bluetooth.saveLastMove()
-  },
-  onCentralStateCanceled() {
-    bluetooth.protocol().onCentralStateCanceled()
   },
   onCentralStateEnded(status?: GameStatus) {
     bluetooth.protocol().onCentralStateEnded(status)

@@ -396,7 +396,7 @@ export default class AnalyseCtrl implements PromotingInterface {
   jump = (path: Tree.Path, direction?: 'forward' | 'backward') => {
     const pathChanged = path !== this.path
     this.setPath(path)
-    this.updateBoard()
+    this.updateBoard(direction !== undefined ? direction === 'forward' ? 'redo' : 'undo' : undefined)
     this.fetchOpening()
     if (this.node && this.node.san && direction === 'forward') {
       if (this.node.san.indexOf('x') !== -1) sound.throttledCapture()
@@ -711,7 +711,7 @@ export default class AnalyseCtrl implements PromotingInterface {
 
   private debouncedStartCeval = debounce(this.startCeval, 500, { trailing: true })
 
-  private updateBoard() {
+  private updateBoard(shift?: Shift) {
     const node = this.node
 
     if (this.data.game.variant.key === 'threeCheck' && !node.checkCount) {
@@ -730,6 +730,7 @@ export default class AnalyseCtrl implements PromotingInterface {
       check: !!node.check,
       lastMove: node.uci ? chessFormat.uciToMoveOrDrop(node.uci) : null,
       otb: true,
+      shift: shift,
     }
 
     this.cgConfig = config
