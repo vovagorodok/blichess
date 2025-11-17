@@ -310,7 +310,7 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
     sound.move()
   }
 
-  public apply(sit: chess.GameSituation) {
+  public apply(sit: chess.GameSituation, shift?: Shift) {
     if (sit) {
       const lastUci = sit.uciMoves.length ? sit.uciMoves[sit.uciMoves.length - 1] : null
       this.chessground.set({
@@ -319,7 +319,8 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
         lastMove: lastUci ? chessFormat.uciToMoveOrDrop(lastUci) : null,
         dests: sit.dests,
         movableColor: sit.player === this.data.player.color ? sit.player : null,
-        check: sit.check
+        check: sit.check,
+        shift: shift,
       })
     }
   }
@@ -370,34 +371,33 @@ export default class AiRound implements AiRoundInterface, PromotingInterface {
     return this.replay!.situations.length - 1
   }
 
-  public jump = (ply: number) => {
+  public jump = (ply: number, shift?: Shift) => {
     this.chessground.cancelMove()
     if (this.replay!.ply === ply || ply < 0 || ply >= this.replay!.situations.length) return false
     this.replay!.ply = ply
-    this.apply(this.replay!.situation())
+    this.apply(this.replay!.situation(), shift)
     return false
   }
 
-  public jumpFirst = () => this.jump(this.firstPly())
+  public jumpFirst = () => this.jump(this.firstPly(), 'undo')
 
   public jumpPrev = () => {
     const ply = this.replay!.ply
     if (this.data.player.color === oppositeColor(this.firstPlayerColor())) {
       const offset = ply % 2 === 0 ? 1 : 2
-      return this.jump(ply - offset)
+      return this.jump(ply - offset, 'undo')
     } else {
       const offset = ply % 2 === 0 ? 2 : 1
-      return this.jump(ply - offset)
+      return this.jump(ply - offset, 'undo')
     }
   }
 
   public jumpNext = () => {
     const ply = this.replay!.ply
-    return this.jump(ply + (ply + 2 >= this.replay!.situations.length ? 1 : 2))
+    return this.jump(ply + (ply + 2 >= this.replay!.situations.length ? 1 : 2), 'redo')
   }
 
-  public jumpLast = () => this.jump(this.lastPly())
-
+  public jumpLast = () => this.jump(this.lastPly(), 'redo')
   public canDrop = () => true
 }
 

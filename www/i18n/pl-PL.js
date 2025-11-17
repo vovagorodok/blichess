@@ -1403,7 +1403,7 @@ export default {
   "disconnectedFromBluetoothDevice": "Rozłączono urządzenie bluetooth",
   "rejected": "Odrzucono",
   "variantUnsupported": "Wariant nieobsługiwany",
-  "undoUnsupported": "Cofnięcie nieobsługiwane",
+  "shiftUnsupported": "Przesunięcie nieobsługiwane",
   "synchronized": "Zsynchronizowano",
   "unsynchronized": "Rozsynchronizowano",
   "unexpected": "Nieoczekiwano",

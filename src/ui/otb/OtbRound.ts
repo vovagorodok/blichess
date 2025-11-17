@@ -264,7 +264,7 @@ export default class OtbRound implements OtbRoundInterface, PromotingInterface {
     this.save()
   }
 
-  public apply(sit: chess.GameSituation) {
+  public apply(sit: chess.GameSituation, shift?: Shift) {
     if (sit) {
       if (this.clock && this.clock.activeSide() !== sit.player) {
         this.clock.toggleActiveSide()
@@ -277,7 +277,8 @@ export default class OtbRound implements OtbRoundInterface, PromotingInterface {
         lastMove: lastUci ? chessFormat.uciToMoveOrDrop(lastUci) : null,
         dests: sit.dests,
         movableColor: sit.player,
-        check: sit.check
+        check: sit.check,
+        shift: shift
       })
     }
   }
@@ -318,18 +319,18 @@ export default class OtbRound implements OtbRoundInterface, PromotingInterface {
     return this.replay?.situation().player || 'white'
   }
 
-  public jump = (ply: number): false => {
+  public jump = (ply: number, shift?: Shift): false => {
     this.chessground.cancelMove()
     if (ply < 0 || ply >= this.replay!.situations.length) return false
     this.replay!.ply = ply
-    this.apply(this.replay!.situation())
+    this.apply(this.replay!.situation(), shift)
     return false
   }
 
-  public jumpNext = () => this.jump(this.replay!.ply + 1)
-  public jumpPrev = () => this.jump(this.replay!.ply - 1)
-  public jumpFirst = () => this.jump(this.firstPly())
-  public jumpLast = () => this.jump(this.lastPly())
+  public jumpNext = () => this.jump(this.replay!.ply + 1, 'redo')
+  public jumpPrev = () => this.jump(this.replay!.ply - 1, 'undo')
+  public jumpFirst = () => this.jump(this.firstPly(), 'undo')
+  public jumpLast = () => this.jump(this.lastPly(), 'redo')
 
   public firstPly = () => 0
   public lastPly = () => this.replay!.situations.length - 1

@@ -1399,7 +1399,7 @@ export default {
   "disconnectedFromBluetoothDevice": "Отключено от bluetooth устройства",
   "rejected": "Отклонено",
   "variantUnsupported": "Вариант не поддерживается",
-  "undoUnsupported": "Отмена не поддерживается",
+  "shiftUnsupported": "Сдвиг не поддерживается",
   "synchronized": "Cинхронизировано",
   "unsynchronized": "Рассинхронизировано",
   "unexpected": "Неожиданно",

@@ -26,8 +26,8 @@ export class BaseProtocol implements Protocol {
   onCentralStateChanged() {
     this.state?.onCentralStateChanged()
   }
-  onCentralStateCanceled() {
-    this.state?.onCentralStateCanceled()
+  onCentralStateShifted(shift: Shift) {
+    this.state?.onCentralStateShifted(shift)
   }
   onCentralStateEnded(status?: GameStatus) {
     this.state?.onCentralStateEnded(status)
@@ -61,7 +61,7 @@ export class BaseState {
   onPeripheralCommand(_cmd: string) {}
   onCentralStateCreated(_st: State) {}
   onCentralStateChanged() {}
-  onCentralStateCanceled() {}
+  onCentralStateShifted(_shift: Shift) {}
   onCentralStateEnded(_status?: GameStatus) {}
   onMoveRejectedByCentral() {}
 
