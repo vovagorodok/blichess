@@ -234,6 +234,9 @@ class GetState extends Idle {
 
 class Round extends Idle {
   onCentralStateShifted(shift: Shift) {
+    const state = this.getState()
+    applyPeripheralMoveRejected(state, false)
+
     if (!this.getFeatures().undoRedo.isSupported) {
       this.transitionTo(new Idle)
       sendCommandToPeripheral(`${Command.End} ${EndReason.Abort}`)
@@ -241,7 +244,6 @@ class Round extends Idle {
       return;
     }
 
-    const state = this.getState()
     const cmd = shift == 'undo' ? Command.Undo : Command.Redo
     sendCommandToPeripheral(`${cmd} ${createFullFen(state)}`)
     if (this.getFeatures().lastMove.isSupported && state.lastMove) {
