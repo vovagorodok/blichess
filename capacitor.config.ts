@@ -7,7 +7,7 @@ const config: CapacitorConfig = {
   bundledWebRuntime: false,
   webDir: 'www',
   backgroundColor: '000000ff',
-  appendUserAgent: 'Lichobile/8.0.0+ble2.3.1',
+  appendUserAgent: 'Lichobile/8.0.0+ble2.4.0',
   plugins: {
     SplashScreen: {
       androidSplashResourceName: 'launch_splash',
