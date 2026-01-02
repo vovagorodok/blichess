@@ -10,12 +10,16 @@ const roles: {[i: string]: Role} = {
   b: 'bishop',
   q: 'queen',
   k: 'king',
+  m: 'unsupport',
+  d: 'unsupport',
   P: 'pawn',
   R: 'rook',
   N: 'knight',
   B: 'bishop',
   Q: 'queen',
-  K: 'king'
+  K: 'king',
+  M: 'unsupport',
+  D: 'unsupport'
 }
 
 const letters = {
@@ -24,7 +28,8 @@ const letters = {
   knight: 'n',
   bishop: 'b',
   queen: 'q',
-  king: 'k'
+  king: 'k',
+  unsupport: 'p'
 }
 
 export function convertFenToPeripheralPieces(fen: string): cg.PeripheralPieces {

@@ -6,7 +6,8 @@ const roleToUciMap = {
   knight: 'n',
   bishop: 'b',
   queen: 'q',
-  king: 'k'
+  king: 'k',
+  unsupport: 'p'
 }
 
 const uciToRoleMap: {[k: string]: Role } = {
@@ -15,11 +16,17 @@ const uciToRoleMap: {[k: string]: Role } = {
   N: 'knight',
   R: 'rook',
   Q: 'queen',
+  K: 'king',
+  M: 'unsupport',
+  D: 'unsupport',
   p: 'pawn',
   b: 'bishop',
   n: 'knight',
   r: 'rook',
-  q: 'queen'
+  q: 'queen',
+  k: 'king',
+  m: 'unsupport',
+  d: 'unsupport'
 }
 
 export interface SanToRole {
