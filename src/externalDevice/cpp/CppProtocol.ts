@@ -236,7 +236,7 @@ class Round extends Idle {
   onCentralStateShifted(shift: Shift) {
     const state = this.getState()
     const cmd = this.getFeatures().undoRedo.isSupported ?
-      shift == 'undo' ? Command.Undo : Command.Redo :
+      (shift === 'undo' ? Command.Undo : Command.Redo) :
       Command.Begin
     applyPeripheralMoveRejected(state, false)
     sendCommandToPeripheral(`${cmd} ${createFullFen(state)}`)
