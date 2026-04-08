@@ -154,7 +154,15 @@ export default {
     bluetoothConnection.lastMove = bluetoothConnection.centralState.lastMove
   },
   isRepeatedLastMove() {
-    return bluetoothConnection.lastMove === bluetoothConnection.centralState.lastMove
+    const last = bluetoothConnection.lastMove
+    const curr = bluetoothConnection.centralState.lastMove
+    if (!last || !curr) {
+      return last === curr
+    }
+
+    const [lastOrig, lastDest] = last
+    const [currOrig, currDest] = curr
+    return lastOrig === currOrig && lastDest === currDest
   },
   sendCommandToPeripheral(cmd: string) {
     bluetoothConnection.sendCommandToPeripheral(cmd)
