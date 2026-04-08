@@ -61,21 +61,22 @@ export function applyPeripheralPieces(st: State, peripheralFen: string) {
 }
 
 export function lastMoveToUci(st: State): string {
-  const lastMove = st.lastMove!
-  const uci = chessFormat.moveToUci(
-    lastMove[0],
-    lastMove[1],
-    st.lastPromotion ? st.lastPromotion : undefined)
+  const [orig, dest] = st.lastMove!
+  const prom = st.lastPromotion || undefined
+  const uci = chessFormat.moveToUci(orig, dest, prom)
 
-  if (st.variant === 'chess960') return uci;
+  if (st.variant === 'chess960')
+    return uci;
 
   const kingUci = chessFormat.altCastles[uci]
-  if (kingUci === undefined) return uci
+  if (kingUci === undefined)
+    return uci
 
   const kingMove = chessFormat.uciToMove(kingUci)
-  return st.pieces.get(lastMove[0]) === undefined &&
-         st.pieces.get(lastMove[1]) === undefined &&
-         st.pieces.get(kingMove[1])?.role === 'king'
+  const kingDest = kingMove[1]
+  return st.pieces.get(orig) === undefined &&
+         st.pieces.get(dest) === undefined &&
+         st.pieces.get(kingDest)?.role === 'king'
       ? kingUci
       : uci
 }
