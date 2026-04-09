@@ -2,6 +2,7 @@ import { BleClient, BleDevice, textToDataView, dataViewToText } from '@capacitor
 import settings from '../settings'
 import redraw from '../utils/redraw'
 import i18n from '../i18n'
+import isEqual from 'lodash-es/isEqual'
 import { State, makeDefaults } from '../chessground/state'
 import { Toast } from '@capacitor/toast'
 import { Protocol } from './Protocol'
@@ -154,15 +155,7 @@ export default {
     bluetoothConnection.lastMove = bluetoothConnection.centralState.lastMove
   },
   isRepeatedLastMove() {
-    const last = bluetoothConnection.lastMove
-    const curr = bluetoothConnection.centralState.lastMove
-    if (!last || !curr) {
-      return last === curr
-    }
-
-    const [lastOrig, lastDest] = last
-    const [currOrig, currDest] = curr
-    return lastOrig === currOrig && lastDest === currDest
+    return isEqual(bluetoothConnection.lastMove, bluetoothConnection.centralState.lastMove)
   },
   sendCommandToPeripheral(cmd: string) {
     bluetoothConnection.sendCommandToPeripheral(cmd)
