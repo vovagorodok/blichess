@@ -57,6 +57,7 @@ export function applyPeripheralSettable(st: State, isSettable: boolean) {
 }
 
 export function applyPeripheralPieces(st: State, peripheralFen: string) {
+  st.peripheral.isStateKnown = true
   st.peripheral.pieces = fen.convertFenToPeripheralPieces(peripheralFen)
 }
 

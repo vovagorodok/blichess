@@ -266,9 +266,8 @@ function computeSquareClasses(d: State): Map<Key, string> {
   const squares = new Map()
   const centralPieces = d.pieces
   const peripheralPieces = d.peripheral.pieces
-  const arePeripheralPiecesEmpty = !peripheralPieces.size
 
-  if (d.peripheral.isSynchronized || arePeripheralPiecesEmpty) {
+  if (d.peripheral.isSynchronized || !d.peripheral.isStateKnown) {
     if (d.lastMove && d.highlight.lastMove) {
       addSquare(squares, d.lastMove[0], 'last-move')
       addSquare(squares, d.lastMove[1], 'last-move')
