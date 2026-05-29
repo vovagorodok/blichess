@@ -121,6 +121,7 @@ export default {
   "logOut": "Wyloguj",
   "signIn": "Zaloguj się",
   "youNeedAnAccountToDoThat": "Do tego potrzebne jest konto",
+  "staySafeOnline": "Zachowaj bezpieczeństwo w sieci i nigdy nie udostępniaj danych osobowych innym użytkownikom.",
   "signUp": "Zarejestruj się",
   "computersAreNotAllowedToPlay": "Partie graczy komputerowych lub grających z jego pomocą są zabronione. Podczas gry niedozwolone jest korzystanie z pomocy programów szachowych, baz danych oraz innych graczy. Odradzamy zakładanie wielu kont, a utrata umiaru w tym zakresie skutkować będzie zablokowaniem.",
   "games": "Partie",

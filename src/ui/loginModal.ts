@@ -32,6 +32,9 @@ export default {
         h('h2', i18n('signIn'))
       ]),
       h('div.modal_content', [
+        h('p.signupWarning.withIcon[data-icon=!]', [
+          i18n('staySafeOnline')
+        ]),
         h('form.defaultForm.login', {
           onsubmit: onLogin
         }, [

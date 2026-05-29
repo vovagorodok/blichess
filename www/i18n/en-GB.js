@@ -127,6 +127,7 @@ export default {
   "signIn": "Sign in",
   "rememberMe": "Keep me logged in",
   "youNeedAnAccountToDoThat": "You need an account to do that",
+  "staySafeOnline": "Stay safe online and never share personal information with other users.",
   "signUp": "Register",
   "computersAreNotAllowedToPlay": "Computers and computer-assisted players are not allowed to play. Please do not get assistance from chess engines, databases, or from other players while playing. Also note that making multiple accounts is strongly discouraged and excessive multi-accounting will lead to being banned.",
   "games": "Games",
